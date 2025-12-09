@@ -17,6 +17,9 @@ TIME 		?=$(shell date +%s)
 CGO_ENABLED ?=0
 GOPROXY 	?=go env -w GO111MODULE=on && go env -w GOPROXY=https://goproxy.cn,direct
 
+PROTO_SRC	=./proto
+OUT_DIR		=./rpc/gen
+
 protoGen:
 	protoc \
 -I${PROTO_SRC} \
@@ -25,7 +28,7 @@ protoGen:
 --grpc-gateway_out ${OUT_DIR} --grpc-gateway_opt paths=source_relative \
 ${PROTO_SRC}/*.proto
 	echo ''
-	@ls ${PROTO_SRC}/*.proto
+	@ls -l ${OUT_DIR}/
 
 ### 整理模块
 # 确保go.mod与模块中的源代码一致。
@@ -56,10 +59,6 @@ gen:
 
 gqlgen:
 	gqlgen generate
-
-GOOGLEAPIS	=../third_party/googleapis
-PROTO_SRC	=./proto
-OUT_DIR		=./rpc
 
 ### 下载模块
 get:
@@ -99,7 +98,7 @@ up: rm
 	docker-compose -f docker-compose.yml up -d
 
 serve:
-	GIN_ENV=$(e) ./dist/$(APP_NAME)-darwin-amd64
+	./dist/$(APP_NAME)-darwin-amd64
 	@#GIN_ENV=$(e) ./dist/$(APP_NAME)-darwin-arm64
 
 ### 1 = stdout = normal output of a command

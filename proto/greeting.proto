@@ -4,7 +4,7 @@ package rpc;
 
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/chunhui2001/zero4go/rpc;rpc";
+option go_package = "github.com/chunhui2001/zero4go/rpc/gen;gen";
 
 service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply);

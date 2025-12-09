@@ -1,4 +1,4 @@
-package services
+package rpc
 
 import (
 	"context"
@@ -7,7 +7,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "github.com/chunhui2001/zero4go/rpc"
+	pb "github.com/chunhui2001/zero4go/rpc/gen"
+
 )
 
 // gRPC server implementation
@@ -24,5 +25,6 @@ func (s *GreeterServer) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb
 
 // grpcurl -plaintext localhost:50051 rpc.Greeter/SayInfo
 func (s *GreeterServer) SayInfo(ctx context.Context, req *emptypb.Empty) (*pb.InfoReply, error) {
+	
 	return &pb.InfoReply{Message: "Yeah, your server is running"}, nil
 }

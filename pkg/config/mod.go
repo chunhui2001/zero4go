@@ -1,13 +1,15 @@
 package config
 
 import (
-	"github.com/chunhui2001/zero4go/pkg/stdout"
 	"log"
 	"os"
+
+	"github.com/chunhui2001/zero4go/pkg/stdout"
 
 	"github.com/alecthomas/kong"
 	"github.com/spf13/viper"
 
+	"github.com/chunhui2001/zero4go/pkg/gkafka"
 	"github.com/chunhui2001/zero4go/pkg/logs"
 )
 
@@ -90,6 +92,12 @@ func OnLoad() {
 
 		if err := v1.Unmarshal(logs.LogSetting); err != nil {
 			log.Printf("viper parse LogConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
+
+			os.Exit(3)
+		}
+
+		if err := v1.Unmarshal(gkafka.KafkaSetting); err != nil {
+			log.Printf("viper parse KafkaConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
 
 			os.Exit(3)
 		}

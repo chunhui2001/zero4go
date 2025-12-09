@@ -2,8 +2,6 @@ package server
 
 import (
 	"context"
-	pb "github.com/chunhui2001/zero4go/rpc"
-	"github.com/chunhui2001/zero4go/services"
 	"net"
 	"net/http"
 	"os"
@@ -25,6 +23,9 @@ import (
 
 	. "github.com/chunhui2001/zero4go/pkg"
 	. "github.com/chunhui2001/zero4go/pkg/logs"
+	
+	pb "github.com/chunhui2001/zero4go/rpc/gen"
+	"github.com/chunhui2001/zero4go/rpc"
 )
 
 func Setup(f func(*Application)) *Application {
@@ -64,7 +65,7 @@ func (a *Application) Run(f func(*grpc.Server)) {
 		grpc.StreamInterceptor(interceptors.StreamLoggingInterceptor),
 	)
 
-	pb.RegisterGreeterServer(grpcServer, &services.GreeterServer{})
+	pb.RegisterGreeterServer(grpcServer, &rpc.GreeterServer{})
 
 	// customer grpc service
 	f(grpcServer)

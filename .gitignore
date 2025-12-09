@@ -60,4 +60,5 @@ application_temp.yaml
 .sqlx
 migration.bin
 diff.html
+__logs
 
