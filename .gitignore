@@ -1,0 +1,63 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+.classpath
+.settings
+.factorypath
+.project
+*.log
+*.out
+*.swp
+*.jar
+target
+*.bluej
+logfile.txt
+*.class
+*~
+.vscode
+dependency-reduced-pom.xml
+
+# dependencies
+node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+build
+dist
+.idea
+*.iml
+
+# misc
+.DS_Store
+#.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.temp
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn.lock*
+#*#
+*/#*#
+
+
+/package-lock.json
+/npm
+*.zip
+package-lock.json
+*.debug
+*.ignore
+tmp*
+10mb
+*/jmeter_jmx/reports
+zero4rs/migrations
+application_temp.yaml
+.sqlx
+migration.bin
+diff.html
+

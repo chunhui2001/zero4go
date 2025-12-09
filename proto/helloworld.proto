@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package rpc;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/chunhui2001/zero4go/rpc;rpc";
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc SayInfo (google.protobuf.Empty) returns (InfoReply);
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+
+message InfoReply {
+  string message = 1;
+}
