@@ -31,7 +31,7 @@ var KafkaProducer *KafkaClient
 func InitKafka() {
 
 	if !KafkaSetting.Enable {
-		Log.Infof("Init kafka enable: val=%s", KafkaSetting.Enable)
+		Log.Infof("Init kafka mod: val=%s", KafkaSetting.Enable)
 		return
 	}
 

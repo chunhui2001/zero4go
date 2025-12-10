@@ -6,6 +6,7 @@ import (
 	"github.com/chunhui2001/zero4go/pkg/gredis"
 	"github.com/chunhui2001/zero4go/pkg/http_client"
 	"github.com/chunhui2001/zero4go/pkg/logs"
+	"github.com/chunhui2001/zero4go/pkg/mysqlg"
 )
 
 func init() {
@@ -16,4 +17,5 @@ func init() {
 	gkafka.InitKafka()
 
 	gredis.Init()
+	mysqlg.Init()
 }
