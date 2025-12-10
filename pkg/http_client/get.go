@@ -1,11 +1,9 @@
 package http_client
 
 import (
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
 	"time"
 
@@ -13,24 +11,6 @@ import (
 
 	. "github.com/chunhui2001/zero4go/pkg/logs"
 )
-
-func defaultTransport() http.RoundTripper {
-	return &http.Transport{
-		Dial: (&net.Dialer{
-			Timeout: time.Duration(35) * time.Second,
-		}).Dial,
-		TLSHandshakeTimeout: time.Duration(40) * time.Second,
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-		MaxIdleConns:        100,
-		IdleConnTimeout:     time.Duration(150) * time.Second,
-		MaxIdleConnsPerHost: 100,
-		MaxConnsPerHost:     100,
-		DisableCompression:  true,
-		DisableKeepAlives:   false, // 默认选项
-	}
-}
 
 func HttpGet(reqUrl string) ([]byte, error) {
 
@@ -51,7 +31,9 @@ func HttpGet(reqUrl string) ([]byte, error) {
 	command, _ := http2curl.GetCurlCommand(req)
 	commandCurl := command.String()
 
-	Log.Debugf("commandCurl: curl=%s", commandCurl)
+	if HttpSetting.HttpClientPrintCurl {
+		Log.Debugf("commandCurl: curl=%s", commandCurl)
+	}
 
 	if err != nil {
 		Log.Errorf("HTTP GET error: %v", err)

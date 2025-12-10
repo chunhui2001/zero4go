@@ -61,4 +61,6 @@ application_temp.yaml
 migration.bin
 diff.html
 __logs
+logs
+
 

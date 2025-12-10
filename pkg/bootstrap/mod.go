@@ -3,15 +3,17 @@ package bootstrap
 import (
 	"github.com/chunhui2001/zero4go/pkg/config"
 	"github.com/chunhui2001/zero4go/pkg/gkafka"
+	"github.com/chunhui2001/zero4go/pkg/gredis"
+	"github.com/chunhui2001/zero4go/pkg/http_client"
 	"github.com/chunhui2001/zero4go/pkg/logs"
 )
 
 func init() {
-	// 读取配置文件
 	config.OnLoad()
 
-	// 初始化日志
 	logs.InitLog()
-
+	http_client.Init()
 	gkafka.InitKafka()
+
+	gredis.Init()
 }

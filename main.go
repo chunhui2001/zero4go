@@ -20,7 +20,7 @@ func main() {
 	}).Run(func(grpcServer *grpc.Server) {
 
 		gkafka.CreateConsumer("localhost:9092", "group1", "first-topic", func(key string, message string) {
-			//Log.Infof("消费了一个消息: key=%s", key)
+			
 		})
 	})
 }

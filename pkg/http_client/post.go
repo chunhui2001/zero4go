@@ -32,7 +32,9 @@ func HttpPost(reqUrl string, contentType string, data []byte) ([]byte, error) {
 	command, _ := http2curl.GetCurlCommand(req)
 	commandCurl := command.String()
 
-	Log.Debugf("commandCurl: curl=%s", commandCurl)
+	if HttpSetting.HttpClientPrintCurl {
+		Log.Debugf("commandCurl: curl=%s", commandCurl)
+	}
 
 	if err != nil {
 		Log.Errorf("HTTP POST error: %v", err)
