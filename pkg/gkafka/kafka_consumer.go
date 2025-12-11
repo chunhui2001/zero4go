@@ -96,7 +96,7 @@ func CreateConsumer(brokers string, groupId string, topic string, handler func(t
 	return nil
 }
 
-func CreateConsumerGroup(brokers string, groupId string, topic string, handler ConsumerHandler) error {
+func CreateConsumerGroup(brokers string, groupId string, topic string, handler sarama.ConsumerGroupHandler) error {
 	topics := []string{topic}
 
 	config := sarama.NewConfig()
