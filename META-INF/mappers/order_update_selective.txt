@@ -1,0 +1,67 @@
+update t_orders
+    set
+    {% if f_waiter_id %}
+        f_waiter_id = {{ f_waiter_id|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_waiter_name and f_waiter_name != "" %}
+        f_waiter_name= {{ f_waiter_name|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_waiter_name_pinyin and f_waiter_name_pinyin != "" %}
+        f_waiter_name_pinyin= {{ f_waiter_name_pinyin|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_waiter_name_space and f_waiter_name_space != "" %}
+        f_waiter_name_space= {{ f_waiter_name_space|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_item_name and f_item_name != "" %}
+        f_item_name= {{ f_item_name|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_item_name_pinyin and f_item_name_pinyin != "" %}
+        f_item_name_pinyin= {{ f_item_name_pinyin|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_item_name_space and f_item_name_space != "" %}
+        f_item_name_space= {{ f_item_name_space|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_vip_name and f_vip_name != "" %}
+        f_vip_name= {{ f_vip_name|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_vip_phone and f_vip_phone != "" %}
+        f_vip_phone= {{ f_vip_phone|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_remaining_amount %}
+        f_remaining_amount= {{ f_remaining_amount|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_pay_uuid and f_pay_uuid != "" %}
+        f_pay_uuid= {{ f_pay_uuid|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_pay_time %}
+        f_pay_time= {{ f_pay_time|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_started_at %}
+        f_started_at= {{ f_started_at|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_price_unit %}
+        f_price_unit= {{ f_price_unit|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_price_real %}
+        f_price_real= {{ f_price_real|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_price_deal %}
+        f_price_deal= {{ f_price_deal|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_payment and f_payment != "" %}
+        f_payment= {{ f_payment|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_status and f_status != "" %}
+        f_status= {{ f_status|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_creator and f_creator != "" %}
+        f_creator= {{ f_creator|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_updated_at %}
+        f_updated_at= {{ f_updated_at|sql_bind:bindCtx }},
+    {% endif %}
+    {% if f_created_at %}
+        f_created_at = {{ f_created_at|sql_bind:bindCtx }}
+    {% endif %}
+where
+    f_id={{ id|sql_bind:bindCtx }};

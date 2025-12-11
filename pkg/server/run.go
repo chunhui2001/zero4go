@@ -23,15 +23,24 @@ import (
 
 	. "github.com/chunhui2001/zero4go/pkg"
 	. "github.com/chunhui2001/zero4go/pkg/logs"
-	
-	pb "github.com/chunhui2001/zero4go/rpc/gen"
+
 	"github.com/chunhui2001/zero4go/rpc"
+	pb "github.com/chunhui2001/zero4go/rpc/gen"
 )
 
 func Setup(f func(*Application)) *Application {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := &Application{Engine: gin.New()}
+
+	r.Use(gin.Recovery())
+
+	//// 使用 Pongo2 作为 Gin 的模板引擎
+	//r.HTMLRender = pongo2gin.New(pongo2gin.RenderOptions{
+	//	TemplateDir: "templates",
+	//	TemplateSet: nil,
+	//	ContentType: "text/html; charset=utf-8",
+	//})
 
 	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedExtensions([]string{".pdf", ".mp4", ".ico"})))
 	r.Use(static.Serve("/static", static.LocalFile(filepath.Join(utils.RootDir(), "./static"), false)))

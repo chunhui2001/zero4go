@@ -11,9 +11,9 @@ import (
 
 	"github.com/chunhui2001/zero4go/pkg/gkafka"
 	"github.com/chunhui2001/zero4go/pkg/gredis"
+	"github.com/chunhui2001/zero4go/pkg/gsql"
 	"github.com/chunhui2001/zero4go/pkg/http_client"
 	"github.com/chunhui2001/zero4go/pkg/logs"
-	"github.com/chunhui2001/zero4go/pkg/mysqlg"
 )
 
 type CLI struct {
@@ -117,7 +117,7 @@ func OnLoad() {
 			os.Exit(3)
 		}
 
-		if err := v1.Unmarshal(mysqlg.MysqlSetting); err != nil {
+		if err := v1.Unmarshal(gsql.MysqlSetting); err != nil {
 			log.Printf("viper parse MySqlConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
 
 			os.Exit(3)

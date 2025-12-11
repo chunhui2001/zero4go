@@ -1,9 +1,13 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -54,14 +58,41 @@ func ToString(s any) string {
 	}
 }
 
+func ToJsonString(v interface{}) string {
+	if v == nil {
+		return ""
+	}
+
+	if reflect.TypeOf(v).String() == "string" {
+		return v.(string)
+	}
+
+	b, err := json.Marshal(v)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return string(b)
+}
+
+func NormalizeSpace(s string) string {
+	// 1. 去掉所有换行符
+	s = strings.ReplaceAll(s, "\n", " ")
+	s = strings.ReplaceAll(s, "\r", " ") // Windows 换行
+
+	// 2. 将一个或多个空格替换为单个空格
+	re := regexp.MustCompile(`\s+`)
+	s = re.ReplaceAllString(s, " ")
+
+	// 3. 去掉首尾空格
+	return strings.TrimSpace(s)
+}
+
 func ToDateTimeUTCString(tm time.Time) string {
 	return tm.Format(TimeStampFormat)
 }
 
-func Max(a, b int) int {
-	if a > b {
-		return a
-	}
-
-	return b
+func NowTimestamp() int64 {
+	return time.Now().UTC().UnixNano() / int64(time.Millisecond)
 }

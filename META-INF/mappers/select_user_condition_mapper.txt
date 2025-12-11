@@ -1,0 +1,8 @@
+select
+    *
+from
+    t_orders
+where
+    f_id < {{ id | sql_bind:bindCtx }}
+    and f_waiter_name like {{ name | sql_bind:bindCtx }}
+    ;

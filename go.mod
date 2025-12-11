@@ -5,6 +5,7 @@ go 1.25.4
 require (
 	github.com/IBM/sarama v1.46.3
 	github.com/alecthomas/kong v1.13.0
+	github.com/flosch/pongo2/v6 v6.0.0
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.11.0
@@ -15,7 +16,6 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/segmentio/kafka-go v0.4.49
 	github.com/spf13/viper v1.21.0
-	github.com/thoas/go-funk v0.9.3
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
