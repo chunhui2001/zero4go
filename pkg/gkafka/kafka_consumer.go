@@ -95,3 +95,34 @@ func CreateConsumer(brokers string, groupId string, topic string, handler func(t
 
 	return nil
 }
+
+func CreateConsumerGroup(brokers string, groupId string, topic string, handler ConsumerHandler) error {
+	topics := []string{topic}
+
+	config := sarama.NewConfig()
+	config.Version = sarama.V3_6_0_0
+	config.Consumer.Return.Errors = true
+	config.Consumer.Offsets.Initial = sarama.OffsetNewest
+
+	consumerGroup, err := sarama.NewConsumerGroup(strings.Split(brokers, ","), groupId, config)
+
+	if err != nil {
+		Log.Errorf("Error creating group: brokers=%s, topic=%s, groupId=%s, Error=%v", brokers, topic, groupId, err)
+
+		return err
+	}
+
+	ctx := context.Background()
+
+	go func() {
+		for {
+			if err := consumerGroup.Consume(ctx, topics, handler); err != nil {
+				log.Printf("Error from consumer: %v", err)
+			}
+		}
+	}()
+
+	// Log.Infof("Consumer started...")
+
+	return nil
+}
