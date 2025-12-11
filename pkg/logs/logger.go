@@ -60,8 +60,14 @@ func NewLogger(conf *LogConf) Logger {
 		writers...,
 	)
 
+	logLevel, err := zerolog.ParseLevel(conf.LogLevel)
+
+	if err != nil {
+		logLevel = zerolog.DebugLevel
+	}
+
 	l := zerolog.New(mw).
-		Level(zerolog.DebugLevel).
+		Level(logLevel).
 		With().
 		// 修复封装log后 “导致 caller 跳帧” 问题
 		//Caller().
@@ -74,6 +80,10 @@ func NewLogger(conf *LogConf) Logger {
 
 	logger := Logger{
 		Logger: l,
+	}
+
+	if err != nil {
+		logger.Errorf("c zerolog err %v", err)
 	}
 
 	logger.Infof("logger initialized: %v", conf)

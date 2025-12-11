@@ -23,7 +23,7 @@ type ConsumerHandler struct {
 	Brokers string
 	GroupId string
 	Topic   string
-	Handler func(string, string)
+	Handler func(topic string, groupId string, key string, message string) bool
 }
 
 func (h ConsumerHandler) Setup(sarama.ConsumerGroupSession) error {
@@ -42,12 +42,12 @@ func (h ConsumerHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sa
 	for msg := range claim.Messages() {
 		key, val := ReadMessage(msg)
 
-		h.Handler(key, val)
+		if h.Handler(h.Topic, h.GroupId, key, val) {
+			Log.Debugf("消费了一条消息[OK]: Topic=%s, groupId=%s, Key=%s, Value=%s", h.Topic, h.GroupId, key, val)
 
-		Log.Infof("消费了一条消息[OK]: Topic=%s, Key=%s, groupId=%s, Value=%s", h.Topic, key, h.GroupId, val)
-
-		// 手动标记 offset（非常重要）
-		sess.MarkMessage(msg, "")
+			// 手动标记 offset（非常重要）
+			sess.MarkMessage(msg, "")
+		}
 	}
 
 	return nil
@@ -58,7 +58,7 @@ func (h ConsumerHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sa
 // ✔ 2. 使用 sess.MarkMessage() 手动提交: sess.MarkMessage(msg, "")
 // ✔ 3. 消费失败建议写入 重试 topic（DLQ）: main-topic → retry-topic → dlq-topic
 // 我能帮你生成完整的 Kafka 重试队列 示例（生产级）。
-func CreateConsumer(brokers string, groupId string, topic string, handler func(string, string)) error {
+func CreateConsumer(brokers string, groupId string, topic string, handler func(topic string, groupId string, key string, message string) bool) error {
 	topics := []string{topic}
 
 	config := sarama.NewConfig()

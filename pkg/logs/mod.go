@@ -11,6 +11,7 @@ import (
 )
 
 type LogConf struct {
+	LogLevel          string `mapstructure:"LOG_LEVEL" json:"log_level"`                       // debug, into, error, warn
 	LogOutput         string `mapstructure:"LOG_OUTPUT" json:"log_output"`                     // console,file,kafka
 	LogColor          bool   `mapstructure:"LOG_COLOR" json:"log_color"`                       // true
 	LogFilePath       string `mapstructure:"LOG_FILE_PATH" json:"log_file_path"`               // /tmp/logs
@@ -22,6 +23,7 @@ type LogConf struct {
 }
 
 var LogSetting = &LogConf{
+	LogLevel:          "debug",
 	LogOutput:         "console,file",
 	LogColor:          false,
 	LogFilePath:       "logs/app.log",
