@@ -2,7 +2,6 @@ package gkafka
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	"github.com/IBM/sarama"
@@ -117,7 +116,7 @@ func CreateConsumerGroup(brokers string, groupId string, topic string, handler s
 	go func() {
 		for {
 			if err := consumerGroup.Consume(ctx, topics, handler); err != nil {
-				log.Printf("Error from consumer: %v", err)
+				Log.Errorf("Error from consumer: %v", err)
 			}
 		}
 	}()
