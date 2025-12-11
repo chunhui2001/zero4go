@@ -5,8 +5,16 @@ import (
 	"time"
 
 	. "github.com/chunhui2001/zero4go/pkg/logs"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 )
+
+func Pipeline() redis.Pipeliner {
+	return RedisClient.Pipeline()
+}
+
+func Exec(pipe redis.Pipeliner) {
+	pipe.Exec(ctx)
+}
 
 func Expire(key string, expiration int) error {
 	if err := RedisClient.Expire(ctx, key, time.Duration(expiration)*time.Second).Err(); err != nil {
@@ -125,6 +133,8 @@ func GetSet(key string, value string) (string, error) {
 // maxLen: 最多找几个
 func LindexOf(key string, value string, maxLen int64) (int64, error) {
 	val, err := RedisClient.LPos(ctx, key, value, redis.LPosArgs{Rank: 0, MaxLen: maxLen}).Result()
+
+	//redis.LPosArgs{}
 
 	switch {
 	case errors.Is(err, redis.Nil):

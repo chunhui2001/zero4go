@@ -31,7 +31,7 @@ func HttpGet(reqUrl string) ([]byte, error) {
 	command, _ := http2curl.GetCurlCommand(req)
 	commandCurl := command.String()
 
-	if HttpSetting.HttpClientPrintCurl {
+	if Settings.HttpClientPrintCurl {
 		Log.Debugf("commandCurl: curl=%s", commandCurl)
 	}
 

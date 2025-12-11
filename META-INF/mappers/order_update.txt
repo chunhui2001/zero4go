@@ -1,0 +1,71 @@
+UPDATE
+    t_orders
+SET
+    {{- if .FWaiterID }}
+        f_waiter_id = {{ sql_bind .FWaiterID .CTX }},
+    {{- end }}
+    {{- if .FWaiterName }}
+        f_waiter_name = {{ sql_bind .FWaiterName .CTX }},
+    {{- end }}
+    {{- if .FWaiterNamePinyin }}
+        f_waiter_name_pinyin = {{ sql_bind .FWaiterNamePinyin .CTX }},
+    {{- end }}
+    {{- if .FWaiterNameSpace }}
+        f_waiter_name_space = {{ sql_bind .FWaiterNameSpace .CTX }},
+    {{- end }}
+    {{- if .FItemName }}
+        f_item_name = {{ sql_bind .FItemName .CTX }},
+    {{- end }}
+    {{- if .FItemNamePinyin }}
+        f_item_name_pinyin = {{ sql_bind .FItemNamePinyin .CTX }},
+    {{- end }}
+    {{- if .FItemNameSpace }}
+        f_item_name_space = {{ sql_bind .FItemNameSpace .CTX }},
+    {{- end }}
+    {{- if .FVipName }}
+        f_vip_name = {{ sql_bind .FVipName .CTX }},
+    {{- end }}
+    {{- if .FVipPhone }}
+        f_vip_phone = {{ sql_bind .FVipPhone .CTX }},
+    {{- end }}
+    {{- if .FRemainingAmount }}
+        f_remaining_amount = {{ sql_bind .FRemainingAmount .CTX }},
+    {{- end }}
+    {{- if .FPayUUID }}
+        f_pay_uuid = {{ sql_bind .FPayUUID .CTX }},
+    {{- end }}
+    {{- if .FPayTime }}
+        f_pay_time = {{ sql_bind .FPayTime .CTX }},
+    {{- end }}
+    {{- if .FStartedAt }}
+        f_started_at = {{ sql_bind .FStartedAt .CTX }},
+    {{- end }}
+    {{- if .FPriceUnit }}
+        f_price_unit = {{ sql_bind .FPriceUnit .CTX }},
+    {{- end }}
+    {{- if .FPriceReal }}
+        f_price_real = {{ sql_bind .FPriceReal .CTX }},
+    {{- end }}
+    {{- if .FPriceDeal }}
+        f_price_deal = {{ sql_bind .FPriceDeal .CTX }},
+    {{- end }}
+    {{- if .FPayment }}
+        f_payment = {{ sql_bind .FPayment .CTX }},
+    {{- end }}
+    {{- if .FStatus }}
+        f_status = {{ sql_bind .FStatus .CTX }},
+    {{- end }}
+    {{- if .FCreator }}
+        f_creator = {{ sql_bind .FCreator .CTX }},
+    {{- end }}
+    {{- if .FUpdatedAt }}
+        f_updated_at = {{ sql_bind .FUpdatedAt .CTX }},
+    {{- end }}
+    {{- if .FCreatedAt }}
+        f_created_at = {{ sql_bind .FCreatedAt .CTX }},
+    {{- end }}
+
+    {{- TrimComma "," }}
+WHERE
+    f_id = {{ sql_bind .ID .CTX }}
+;

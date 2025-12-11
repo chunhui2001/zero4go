@@ -4,9 +4,9 @@ import (
 	"github.com/chunhui2001/zero4go/pkg/config"
 	"github.com/chunhui2001/zero4go/pkg/gkafka"
 	"github.com/chunhui2001/zero4go/pkg/gredis"
+	"github.com/chunhui2001/zero4go/pkg/gsql"
 	"github.com/chunhui2001/zero4go/pkg/http_client"
 	"github.com/chunhui2001/zero4go/pkg/logs"
-	"github.com/chunhui2001/zero4go/pkg/mysqlg"
 )
 
 func init() {
@@ -14,8 +14,8 @@ func init() {
 
 	logs.InitLog()
 	http_client.Init()
-	gkafka.InitKafka()
-
+	
+	gkafka.Init()
 	gredis.Init()
-	mysqlg.Init()
+	gsql.Init()
 }

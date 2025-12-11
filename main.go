@@ -5,8 +5,6 @@ import (
 
 	"github.com/chunhui2001/zero4go/api"
 	. "github.com/chunhui2001/zero4go/pkg/server"
-
-	"github.com/chunhui2001/zero4go/pkg/gkafka"
 )
 
 func main() {
@@ -16,12 +14,9 @@ func main() {
 		})
 
 		r.GET("/send_message", api.SendKafkaMessage)
+		r.GET("/insert", api.Insert)
 
 	}).Run(func(grpcServer *grpc.Server) {
 
-		gkafka.CreateConsumer("localhost:9092", "group1", "first-topic", func(topic string, groupId string, key string, message string) bool {
-
-			return true
-		})
 	})
 }

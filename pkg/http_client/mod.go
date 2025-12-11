@@ -18,7 +18,7 @@ type HttpConf struct {
 	HttpClientPrintCurl           bool `mapstructure:"HTTP_CLIENT_PRINT_CURL" json:"http_client_print_curl"`
 }
 
-var HttpSetting = &HttpConf{
+var Settings = &HttpConf{
 	HttpClientTimeout:             1500,
 	HttpClientIdleConnTimeout:     90,
 	HttpClientMaxIdleConns:        100,
@@ -28,22 +28,22 @@ var HttpSetting = &HttpConf{
 }
 
 func Init() {
-	Log.Infof("HttpConf: timeout=%ds", HttpSetting.HttpClientTimeout)
+	Log.Infof("HttpConf: timeout=%ds", Settings.HttpClientTimeout)
 }
 
 func defaultTransport() http.RoundTripper {
 	return &http.Transport{
 		Dial: (&net.Dialer{
-			Timeout: time.Duration(HttpSetting.HttpClientTimeout) * time.Second,
+			Timeout: time.Duration(Settings.HttpClientTimeout) * time.Second,
 		}).Dial,
-		TLSHandshakeTimeout: time.Duration(HttpSetting.HttpClientIdleConnTimeout) * time.Second,
+		TLSHandshakeTimeout: time.Duration(Settings.HttpClientIdleConnTimeout) * time.Second,
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},
-		MaxIdleConns:        HttpSetting.HttpClientMaxIdleConns,
+		MaxIdleConns:        Settings.HttpClientMaxIdleConns,
 		IdleConnTimeout:     time.Duration(150) * time.Second,
-		MaxIdleConnsPerHost: HttpSetting.HttpClientMaxIdleConnsPerHost,
-		MaxConnsPerHost:     HttpSetting.HttpClientMaxConnsPerHost,
+		MaxIdleConnsPerHost: Settings.HttpClientMaxIdleConnsPerHost,
+		MaxConnsPerHost:     Settings.HttpClientMaxConnsPerHost,
 		DisableCompression:  true,
 		DisableKeepAlives:   false, // 默认选项
 	}

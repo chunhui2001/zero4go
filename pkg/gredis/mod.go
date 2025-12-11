@@ -8,7 +8,7 @@ import (
 
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 
 	. "github.com/chunhui2001/zero4go/pkg/logs"
 )
@@ -34,7 +34,7 @@ type RedisConf struct {
 	//PrintMessage bool `mapstructure:"REDIS_MESSAGE_PRINT"`
 }
 
-var ReidsSetting = &RedisConf{
+var Settings = &RedisConf{
 	Mode:           "disable",
 	Host:           "127.0.0.1:6379",
 	Addrs:          "127.0.0.1:6381,127.0.0.1:6382,127.0.0.1:6383,127.0.0.4:6384,127.0.0.1:6385",
@@ -66,25 +66,25 @@ func (r *RedisConf) ServerAddrs() string {
 
 func Init() {
 
-	if ReidsSetting.Mode == "disable" {
-		Log.Infof("Init redis mode: val=%s", ReidsSetting.Mode)
+	if Settings.Mode == "disable" {
+		Log.Infof("Redis-Initialized-Disabled: val=%s", Settings.Mode)
 
 		return
 	}
 
 	ctx = context.Background()
 
-	if ReidsSetting.Mode == "standalone" {
-		if ReidsSetting.Passwd != "" {
+	if Settings.Mode == "standalone" {
+		if Settings.Passwd != "" {
 			RedisClient = redis.NewClient(&redis.Options{
-				Addr:     ReidsSetting.Host,
-				DB:       ReidsSetting.Db,
-				Password: ReidsSetting.Passwd,
+				Addr:     Settings.Host,
+				DB:       Settings.Db,
+				Password: Settings.Passwd,
 			})
 		} else {
 			RedisClient = redis.NewClient(&redis.Options{
-				Addr: ReidsSetting.Host,
-				DB:   ReidsSetting.Db,
+				Addr: Settings.Host,
+				DB:   Settings.Db,
 			})
 		}
 
@@ -93,36 +93,36 @@ func Init() {
 		return
 	}
 
-	var addrs = strings.Split(ReidsSetting.Addrs, ",")
+	var addrs = strings.Split(Settings.Addrs, ",")
 
-	if ReidsSetting.Mode == "sentinel" {
-		if ReidsSetting.RouteByLatency || ReidsSetting.RouteRandomly {
-			if ReidsSetting.Passwd != "" {
+	if Settings.Mode == "sentinel" {
+		if Settings.RouteByLatency || Settings.RouteRandomly {
+			if Settings.Passwd != "" {
 				RedisClient = redis.NewFailoverClusterClient(&redis.FailoverOptions{
-					MasterName:     ReidsSetting.MasterName,
+					MasterName:     Settings.MasterName,
 					SentinelAddrs:  addrs,
-					RouteByLatency: ReidsSetting.RouteByLatency,
-					RouteRandomly:  ReidsSetting.RouteRandomly,
-					Password:       ReidsSetting.Passwd,
+					RouteByLatency: Settings.RouteByLatency,
+					RouteRandomly:  Settings.RouteRandomly,
+					Password:       Settings.Passwd,
 				})
 			} else {
 				RedisClient = redis.NewFailoverClusterClient(&redis.FailoverOptions{
-					MasterName:     ReidsSetting.MasterName,
+					MasterName:     Settings.MasterName,
 					SentinelAddrs:  addrs,
-					RouteByLatency: ReidsSetting.RouteByLatency,
-					RouteRandomly:  ReidsSetting.RouteRandomly,
+					RouteByLatency: Settings.RouteByLatency,
+					RouteRandomly:  Settings.RouteRandomly,
 				})
 			}
 		} else {
-			if ReidsSetting.Passwd != "" {
+			if Settings.Passwd != "" {
 				RedisClient = redis.NewFailoverClient(&redis.FailoverOptions{
-					MasterName:    ReidsSetting.MasterName,
+					MasterName:    Settings.MasterName,
 					SentinelAddrs: addrs,
-					Password:      ReidsSetting.Passwd,
+					Password:      Settings.Passwd,
 				})
 			} else {
 				RedisClient = redis.NewFailoverClient(&redis.FailoverOptions{
-					MasterName:    ReidsSetting.MasterName,
+					MasterName:    Settings.MasterName,
 					SentinelAddrs: addrs,
 				})
 			}
@@ -133,12 +133,12 @@ func Init() {
 		return
 	}
 
-	if ReidsSetting.Mode == "cluster" {
-		if ReidsSetting.RouteByLatency || ReidsSetting.RouteRandomly {
+	if Settings.Mode == "cluster" {
+		if Settings.RouteByLatency || Settings.RouteRandomly {
 			RedisClient = redis.NewClusterClient(&redis.ClusterOptions{
 				Addrs:          addrs,
-				RouteByLatency: ReidsSetting.RouteByLatency,
-				RouteRandomly:  ReidsSetting.RouteRandomly,
+				RouteByLatency: Settings.RouteByLatency,
+				RouteRandomly:  Settings.RouteRandomly,
 			})
 		} else {
 			RedisClient = redis.NewClusterClient(&redis.ClusterOptions{
@@ -156,12 +156,12 @@ func Ping() {
 
 	var serverInfo = "N/a"
 
-	if ReidsSetting.Mode == "sentinel" {
-		serverInfo = fmt.Sprintf("Mode=%s, MasterName=%s, ServerAddrs=%s", ReidsSetting.Mode, ReidsSetting.MasterName, ReidsSetting.ServerAddrs())
-	} else if ReidsSetting.Mode == "standalone" {
-		serverInfo = fmt.Sprintf("Mode=%s, ServerAddrs=%s, DB=%d", ReidsSetting.Mode, ReidsSetting.ServerAddrs(), ReidsSetting.Db)
-	} else if ReidsSetting.Mode == "cluster" {
-		serverInfo = fmt.Sprintf("Mode=%s, ServerAddrs=%s", ReidsSetting.Mode, ReidsSetting.ServerAddrs())
+	if Settings.Mode == "sentinel" {
+		serverInfo = fmt.Sprintf("Mode=%s, MasterName=%s, ServerAddrs=%s", Settings.Mode, Settings.MasterName, Settings.ServerAddrs())
+	} else if Settings.Mode == "standalone" {
+		serverInfo = fmt.Sprintf("Mode=%s, ServerAddrs=%s, DB=%d", Settings.Mode, Settings.ServerAddrs(), Settings.Db)
+	} else if Settings.Mode == "cluster" {
+		serverInfo = fmt.Sprintf("Mode=%s, ServerAddrs=%s", Settings.Mode, Settings.ServerAddrs())
 	}
 
 	info, _ := RedisClient.Info(context.Background(), "server").Result()
@@ -179,10 +179,10 @@ func Ping() {
 	}
 
 	if _, err := RedisClient.Ping(ctx).Result(); err != nil {
-		Log.Error(fmt.Sprintf("Redis-Client-Connect-Failed: ServerVersion=%s, %s, Error=%v", serverVersion, serverInfo, err))
+		Log.Error(fmt.Sprintf("Redis-Initialized-Failed: ServerVersion=%s, %s, Error=%v", serverVersion, serverInfo, err))
 
 		return
 	}
 
-	Log.Info(fmt.Sprintf("Redis-Client-Connect-Succeed: ServerVersion=%s, %s", serverVersion, serverInfo))
+	Log.Info(fmt.Sprintf("Redis-Initialized-Succeed: ServerVersion=%s, %s", serverVersion, serverInfo))
 }

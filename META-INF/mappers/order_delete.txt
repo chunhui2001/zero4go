@@ -1,0 +1,1 @@
+delete from t_orders where f_id > {{ sql_bind .id .CTX }}

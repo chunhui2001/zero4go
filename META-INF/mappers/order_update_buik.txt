@@ -1,0 +1,25 @@
+{{ $CTX := $.CTX }}
+
+INSERT INTO t_orders (
+    f_id,
+    f_waiter_id,
+    f_waiter_name,
+    f_price_deal,
+    f_created_at
+) VALUES
+{{ range .orderList }}
+(
+    {{ sql_bind .ID $CTX }},
+    {{ sql_bind .FWaiterID $CTX }},
+    {{ sql_bind .FWaiterName $CTX }},
+    {{ sql_bind .FPriceDeal $CTX }},
+    {{ sql_bind .FCreatedAt $CTX }}
+),
+{{- end }}
+
+{{- TrimComma "," }}
+ON DUPLICATE KEY UPDATE
+    f_waiter_id = VALUES(f_waiter_id),
+    f_waiter_name = VALUES(f_waiter_name),
+    f_price_deal = VALUES(f_price_deal),
+    f_created_at = VALUES(f_created_at);

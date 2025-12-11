@@ -15,7 +15,7 @@ type KafkaConf struct {
 	//Topic            string `mapstructure:"TOPIC" json:"topic"` // topic
 }
 
-var KafkaSetting = &KafkaConf{
+var Settings = &KafkaConf{
 	BootstrapServers: "localhost:9092",
 	MessageTimeoutMs: 5000,
 }
@@ -28,14 +28,14 @@ func readKey(key sarama.Encoder) string {
 
 var KafkaProducer *KafkaClient
 
-func InitKafka() {
+func Init() {
 
-	if !KafkaSetting.Enable {
-		Log.Infof("Init kafka mod: val=%s", KafkaSetting.Enable)
+	if !Settings.Enable {
+		Log.Infof("Kafka-Initialized-Disabled: val=%s", Settings.Enable)
 		return
 	}
 
-	brokers := strings.Split(KafkaSetting.BootstrapServers, ",")
+	brokers := strings.Split(Settings.BootstrapServers, ",")
 
 	config := sarama.NewConfig()
 
@@ -52,7 +52,7 @@ func InitKafka() {
 	producerAsync, err := sarama.NewAsyncProducer(brokers, config) // 异步生产者
 
 	if err != nil {
-		Log.Errorf("kafka init failed: bootstrap_servers=%s, Error=%v", KafkaSetting.BootstrapServers, err.Error())
+		Log.Errorf("Kafka-Initialized-Failed: bootstrap_servers=%s, Error=%v", Settings.BootstrapServers, err.Error())
 
 		return
 	}
@@ -74,5 +74,5 @@ func InitKafka() {
 		ProducerAsync: producerAsync,
 	}
 
-	Log.Infof("kafka init success: bootstrap_servers=%s", KafkaSetting.BootstrapServers)
+	Log.Infof("Kafka-Initialized-Succeed: bootstrap_servers=%s", Settings.BootstrapServers)
 }
