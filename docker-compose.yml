@@ -14,7 +14,7 @@ services:
     image: chunhui2001/ubuntu_20.04_dev:golang_1.25
     hostname: zero4go
     ports:
-      - 8110:8080
+      - "8110:8080"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:

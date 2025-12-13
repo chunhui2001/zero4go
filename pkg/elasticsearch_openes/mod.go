@@ -93,7 +93,7 @@ func (c *EsClient) Ping() {
 	var r map[string]interface{}
 
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		Log.Errorf("ElasticSearch-Ping-Failed: Error=%s", err.Error())
+		Log.Errorf("ElasticSearch-Ping-Failed: Server=%s, Error=%s", Settings.Servers, err.Error())
 	} else {
 		clusterName := r["cluster_name"].(string)
 		serverInfo := r["version"].(map[string]interface{})

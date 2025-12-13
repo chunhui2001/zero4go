@@ -81,7 +81,7 @@ func (c *EsClient) Ping() {
 	res, err := c.Info()
 
 	if err != nil {
-		Log.Errorf("ElasticSearch-Ping-Failed: Error=%s", err.Error())
+		Log.Errorf("ElasticSearch-Ping-Failed: server=%s, Error=%s", Settings.Servers, err.Error())
 
 		return
 	}

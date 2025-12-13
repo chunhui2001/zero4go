@@ -14,6 +14,7 @@ import (
 	"github.com/chunhui2001/zero4go/pkg/gkafka"
 	"github.com/chunhui2001/zero4go/pkg/gredis"
 	"github.com/chunhui2001/zero4go/pkg/gsql"
+	"github.com/chunhui2001/zero4go/pkg/gzook"
 	"github.com/chunhui2001/zero4go/pkg/http_client"
 	"github.com/chunhui2001/zero4go/pkg/logs"
 )
@@ -136,6 +137,12 @@ func OnLoad() {
 
 		if err := v1.Unmarshal(elasticsearch_openes.Settings); err != nil {
 			log.Printf("viper parse ESConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
+
+			os.Exit(3)
+		}
+
+		if err := v1.Unmarshal(gzook.Settings); err != nil {
+			log.Printf("viper parse ZookConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
 
 			os.Exit(3)
 		}

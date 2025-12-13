@@ -98,9 +98,14 @@ Built2:
 Build:
 	docker run --platform linux/amd64 --rm -it -v $(PWD):/app:rw --name build_$(APP_NAME) chunhui2001/ubuntu_20.04_dev:golang_1.25 /bin/bash -c 'cd /app && make -f Makefile install Built2' -m 4g
 
+### 删除程序容器
+rm:
+	docker rm -f $(APP_NAME) >/dev/null 2>&1
+
 ### 通过容器启动
 up: rm
 	docker-compose -f docker-compose.yml up -d
+	docker logs -f $(APP_NAME)
 
 serve:
 	TZ=$(zone) GIN_ENV=$(e) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-amd64
@@ -120,9 +125,6 @@ newtag:
 logs:
 	docker logs -f --tail 1000 $(APP_NAME)
 
-### 删除程序容器
-rm:
-	docker rm -f $(APP_NAME) >/dev/null 2>&1
 
 privateKey:
 	@# Key considerations for algorithm "RSA" ≥ 2048-bit
