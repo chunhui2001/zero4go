@@ -1,6 +1,10 @@
 package gzook
 
 import (
+	"bufio"
+	"fmt"
+	"net"
+	"regexp"
 	"strings"
 	"time"
 
@@ -20,6 +24,8 @@ var Settings = &ZookConf{
 	Servers: "127.0.0.1:2181",
 }
 
+var Client *ZooClient
+
 type ZooClient struct {
 	*zk.Conn
 }
@@ -37,7 +43,39 @@ func Init() {
 		return
 	}
 
+	Client = &ZooClient{
+		conn,
+	}
+
 	Log.Infof(`ZooKeeper-Connect-Succeed: ConnectTimeout=%s, Servers=%s, SessionId=%d`, timeOut, Settings.Servers, conn.SessionID())
+
+	Client.Info()
+}
+
+func (z *ZooClient) Info() {
+	var addrs = strings.Split(Settings.Servers, ",")
+
+	var lines = make([]string, 0)
+
+	for _, addr := range addrs {
+		var status = z.Srvr(addr)
+
+		re := regexp.MustCompile(`(\d+\.\d+\.\d+)--([\w\W]*?)(Mode: ((follower)|(leader)))`)
+		matches := re.FindStringSubmatch(status)
+		var version string
+		var mode string
+
+		if len(matches) > 4 {
+			version = matches[1]
+			mode = matches[4]
+		}
+
+		lines = append(lines, fmt.Sprintf(`ZooKeeper-Info: addr=%s, version=%s, Mode=%+v`, addr, version, mode))
+	}
+
+	for _, line := range lines {
+		Log.Info(line)
+	}
 }
 
 func (z *ZooClient) TryLock(path string, data string, timeout time.Duration) {
@@ -113,4 +151,44 @@ func (z *ZooClient) Del(path string) error {
 	err := z.Delete(path, sate.Version)
 
 	return err
+}
+
+func (z *ZooClient) Srvr(addr string) string {
+
+	// 建立 TCP 连接
+	conn, err := net.Dial("tcp", addr)
+
+	if err != nil {
+		Log.Infof("连接失败: Addr=%s, Error=%s", addr, err.Error())
+
+		return ""
+	}
+
+	defer conn.Close()
+
+	// 四字节命令，例如 "srvr"
+	cmd := "srvr"
+	_, err = conn.Write([]byte(cmd))
+
+	if err != nil {
+		Log.Infof("发送命令失败: Addr=%s, Error=%s", addr, err.Error())
+
+		return ""
+	}
+
+	// 读取返回数据
+	scanner := bufio.NewScanner(conn)
+
+	var sb strings.Builder
+
+	for scanner.Scan() {
+		sb.WriteString("\n")
+		sb.WriteString(scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		Log.Infof("读取响应失败: Addr=%s, Error=%s", addr, err.Error())
+	}
+
+	return sb.String()
 }
