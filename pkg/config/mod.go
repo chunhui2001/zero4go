@@ -28,12 +28,15 @@ func (c *CLI) Run() error {
 }
 
 type AppConf struct {
-	Env      string `mapstructure:"GIN_ENV"`
-	AppName  string `mapstructure:"APP_NAME"`
-	AppPort  string `mapstructure:"APP_PORT"`
-	TimeZone string `mapstructure:"APP_TIMEZONE"`
-	NodeId   int64  `mapstructure:"NODE_ID"`
-	RpcPort  string `mapstructure:"RPC_PORT"`
+	Env                  string `mapstructure:"GIN_ENV"`
+	AppName              string `mapstructure:"APP_NAME"`
+	AppPort              string `mapstructure:"APP_PORT"`
+	TimeZone             string `mapstructure:"APP_TIMEZONE"`
+	NodeId               int64  `mapstructure:"NODE_ID"`
+	RpcPort              string `mapstructure:"RPC_PORT"`
+	GraphQLEnable        bool   `mapstructure:"GRAPHQL_ENABLE"`
+	GraphQLServerURI     string `mapstructure:"GRAPHQL_SERVER_URI"`
+	GraphQLPlaygroundURI string `mapstructure:"GRAPHQL_PLAYGROUND_URI"`
 }
 
 var AppSetting = &AppConf{

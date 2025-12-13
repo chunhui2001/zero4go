@@ -20,16 +20,6 @@ GOPROXY 	?=go env -w GO111MODULE=on && go env -w GOPROXY=https://goproxy.cn,dire
 PROTO_SRC	=./proto
 OUT_DIR		=./rpc/gen
 
-protoGen:
-	protoc \
--I${PROTO_SRC} \
---go_out ${OUT_DIR} --go_opt paths=source_relative \
---go-grpc_out ${OUT_DIR} --go-grpc_opt paths=source_relative \
---grpc-gateway_out ${OUT_DIR} --grpc-gateway_opt paths=source_relative \
-${PROTO_SRC}/*.proto
-	echo ''
-	@ls -l ${OUT_DIR}/
-
 ### 整理模块
 # 确保go.mod与模块中的源代码一致。
 # 它添加构建当前模块的包和依赖所必须的任何缺少的模块，删除不提供任何有价值的包的未使用的模块。
@@ -53,12 +43,31 @@ install:
 	$(GOPROXY) && go get -u $(mod)
 	@#$(GOPROXY) && go install $(mod)
 
+gqlinit:
+	rm -rf graph
+	rm -rf gqlgen.yml server.go
+	rm -rf
+	go clean -cache -modcache -i -r
+	go get github.com/99designs/gqlgen
+	gqlgen init
+	go mod tidy
+
+gqlgen:
+	gqlgen generate
+
 ### generator code
 gen:
 	protoc ./proto/*.proto --go_out=.
 
-gqlgen:
-	gqlgen generate
+protoGen:
+	protoc \
+-I${PROTO_SRC} \
+--go_out ${OUT_DIR} --go_opt paths=source_relative \
+--go-grpc_out ${OUT_DIR} --go-grpc_opt paths=source_relative \
+--grpc-gateway_out ${OUT_DIR} --grpc-gateway_opt paths=source_relative \
+${PROTO_SRC}/*.proto
+	echo ''
+	@ls -l ${OUT_DIR}/
 
 ### 下载模块
 get:

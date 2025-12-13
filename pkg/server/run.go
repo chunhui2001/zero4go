@@ -8,9 +8,15 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/lru"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
+
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/vektah/gqlparser/v2/ast"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -24,9 +30,40 @@ import (
 	. "github.com/chunhui2001/zero4go/pkg"
 	. "github.com/chunhui2001/zero4go/pkg/logs"
 
+	"github.com/chunhui2001/zero4go/graph"
+	"github.com/chunhui2001/zero4go/pkg/graphql"
 	"github.com/chunhui2001/zero4go/rpc"
 	pb "github.com/chunhui2001/zero4go/rpc/gen"
 )
+
+func graphqlHandler() gin.HandlerFunc {
+	// NewExecutableSchema and Config are in the generated.go file
+	// Resolver is in the resolver.go file
+	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+
+	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
+
+	srv.Use(extension.Introspection{})
+	srv.Use(extension.AutomaticPersistedQuery{
+		Cache: lru.New[string](100),
+	})
+
+	return func(c *gin.Context) {
+		srv.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+func playgroundHandler(endpoint string) gin.HandlerFunc {
+	h := graphql.Playground("GraphQL playground", endpoint)
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
 
 func Setup(f func(*Application)) *Application {
 	gin.SetMode(gin.ReleaseMode)
@@ -35,18 +72,16 @@ func Setup(f func(*Application)) *Application {
 
 	r.Use(gin.Recovery())
 
-	//// 使用 Pongo2 作为 Gin 的模板引擎
-	//r.HTMLRender = pongo2gin.New(pongo2gin.RenderOptions{
-	//	TemplateDir: "templates",
-	//	TemplateSet: nil,
-	//	ContentType: "text/html; charset=utf-8",
-	//})
-
 	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedExtensions([]string{".pdf", ".mp4", ".ico"})))
-	r.Use(static.Serve("/static", static.LocalFile(filepath.Join(utils.RootDir(), "./static"), false)))
+	r.Use(static.Serve("/RichMedias", static.LocalFile(filepath.Join(utils.RootDir(), "./static"), false)))
 	r.Use(favicon.Favicon())
 
 	r.Use(interceptors.AccessLog("/favicon.ico", "/static"))
+
+	if config.AppSetting.GraphQLEnable {
+		r.POST(config.AppSetting.GraphQLServerURI, graphqlHandler())
+		r.GET(config.AppSetting.GraphQLPlaygroundURI, playgroundHandler(config.AppSetting.GraphQLServerURI))
+	}
 
 	// routers
 	r.GET("/info", func(c *RequestContext) {
