@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -16,6 +17,10 @@ const TimeStampFormat = "2006-01-02T15:04:05.000Z07:00"
 
 func NowTimestamp() int64 {
 	return time.Now().UTC().UnixNano() / int64(time.Millisecond)
+}
+
+func DateTimeUTCString() string {
+	return time.Now().Format(TimeStampFormat)
 }
 
 func RootDir() string {
@@ -128,4 +133,27 @@ func ToBase64String(s string) string {
 
 func FromBase64String(s string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(s)
+}
+
+func Base64UUID() string {
+
+	b := make([]byte, 16)
+
+	_, err := rand.Read(b)
+
+	// Note that err == nil only if we read len(b) bytes.
+	if err != nil {
+		panic(err)
+	}
+
+	b[6] &= 0x0f /* clear the 4 most significant bits for the version  */
+	b[6] |= 0x40 /* set the version to 0100 / 0x40 */
+
+	/* Set the variant:
+	 * The high field of th clock sequence multiplexed with the variant.
+	 * We set only the MSB of the variant*/
+	b[8] &= 0x3f /* clear the 2 most significant bits */
+	b[8] |= 0x80 /* set the variant (MSB is set)*/
+
+	return base64.RawURLEncoding.EncodeToString(b)
 }

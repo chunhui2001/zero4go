@@ -23,7 +23,7 @@ services:
       - GIN_ENV=dev
       - WORK_DIR=/app/zero4go
     #entrypoint: ["/bin/sh", "-c", "while true; do echo 1 >/dev/null 2>/dev/null; sleep 1; done"]
-    entrypoint: ["cd", "/app/zero4go", "&&", "/app/zero4go/zero4go-linux-amd64"]
+    entrypoint: ["/app/zero4go/zero4go-linux-amd64", "-e", "dev"]
     volumes:
       - ./META-INF:/app/zero4go/META-INF:ro
       - ./config:/app/zero4go/config:ro

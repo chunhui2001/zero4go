@@ -16,6 +16,7 @@ type KafkaConf struct {
 }
 
 var Settings = &KafkaConf{
+	Enable:           true,
 	BootstrapServers: "localhost:9092",
 	MessageTimeoutMs: 5000,
 }

@@ -103,7 +103,7 @@ up: rm
 	docker-compose -f docker-compose.yml up -d
 
 serve:
-	TZ=$(zone) GIN_ENV=$(e) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-arm64
+	TZ=$(zone) GIN_ENV=$(e) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-amd64
 
 ### 1 = stdout = normal output of a command
 ### 2 = stderr = error output of a command

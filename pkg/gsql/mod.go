@@ -14,7 +14,7 @@ import (
 
 var Client MySQLClient
 
-type MySqlConf struct {
+type MySQLConf struct {
 	Enable   bool   `mapstructure:"MYSQL_ENABLE"`
 	Opts     string `mapstructure:"MYSQL_CONN_OPTS" json:"opts"`
 	Server   string `mapstructure:"MYSQL_SERVER" json:"server"`
@@ -24,11 +24,11 @@ type MySqlConf struct {
 	Location string `mapstructure:"MYSQL_MAPPER_LOCATION" json:"mapper_location"`
 }
 
-func (c *MySqlConf) connString(passwd string) string {
+func (c *MySQLConf) connString(passwd string) string {
 	return fmt.Sprintf(`%s:%s@tcp(%s)/%s?%s`, c.User, passwd, c.Server, c.Database, c.Opts)
 }
 
-var Settings = &MySqlConf{
+var Settings = &MySQLConf{
 	Enable:   false,
 	Opts:     "timeout=90s&interpolateParams=true&multiStatements=true&charset=utf8&autocommit=true&parseTime=True&loc=Asia%2FShanghai",
 	Server:   "127.0.0.1:3306",
@@ -39,7 +39,7 @@ var Settings = &MySqlConf{
 
 func Init() {
 	if !Settings.Enable {
-		Log.Infof("Mysql-Initialized-Disabled: val=%t", Settings.Enable)
+		Log.Infof("MySQL-Initialized-Disabled: val=%t", Settings.Enable)
 
 		return
 	}
@@ -47,7 +47,7 @@ func Init() {
 	db, err := sql.Open("mysql", Settings.connString(Settings.Passwd))
 
 	if err != nil {
-		Log.Errorf("Mysql-Initialized-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****"))
+		Log.Errorf("MySQL-Initialized-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****"))
 
 		return
 	}
@@ -58,7 +58,7 @@ func Init() {
 	db.SetMaxIdleConns(10)
 
 	if err := db.Ping(); err != nil {
-		Log.Error(fmt.Sprintf("Mysql-Initialized-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****")))
+		Log.Error(fmt.Sprintf("MySQL-Initialized-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****")))
 
 		return
 	}
@@ -73,7 +73,7 @@ func Init() {
 	}
 
 	if version, err := Client.Version(); err == nil {
-		Log.Info(fmt.Sprintf("Mysql-Initialized-Connected-Successful: ServerVersion=%s, ConnString=%s", version, Settings.connString("****")))
+		Log.Info(fmt.Sprintf("MySQL-Initialized-Connected-Successful: ServerVersion=%s, ConnString=%s", version, Settings.connString("****")))
 		// execute the Embedding scripts
 		//exceScripts()
 		return

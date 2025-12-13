@@ -9,6 +9,8 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/spf13/viper"
 
+	"github.com/chunhui2001/zero4go/pkg/elasticsearch"
+	"github.com/chunhui2001/zero4go/pkg/elasticsearch_openes"
 	"github.com/chunhui2001/zero4go/pkg/gkafka"
 	"github.com/chunhui2001/zero4go/pkg/gredis"
 	"github.com/chunhui2001/zero4go/pkg/gsql"
@@ -121,7 +123,19 @@ func OnLoad() {
 		}
 
 		if err := v1.Unmarshal(gsql.Settings); err != nil {
-			log.Printf("viper parse MySqlConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
+			log.Printf("viper parse MySQLConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
+
+			os.Exit(3)
+		}
+
+		if err := v1.Unmarshal(elasticsearch.Settings); err != nil {
+			log.Printf("viper parse ESConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
+
+			os.Exit(3)
+		}
+
+		if err := v1.Unmarshal(elasticsearch_openes.Settings); err != nil {
+			log.Printf("viper parse ESConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
 
 			os.Exit(3)
 		}
