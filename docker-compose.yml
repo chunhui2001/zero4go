@@ -1,0 +1,38 @@
+
+## 安装Docker Compose
+# curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+# chmod +x /usr/local/bin/docker-compose
+# docker-compose --version
+# docker-compose up -d
+networks:
+  br0:
+    external: true
+
+services:
+  zero4go:
+    container_name: zero4go
+    image: chunhui2001/ubuntu_20.04_dev:golang_1.25
+    hostname: zero4go
+    ports:
+      - 8110:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      #- TZ=Asia/Shanghai
+      - TZ=UTC
+      - GIN_ENV=dev
+      - WORK_DIR=/app/zero4go
+    #entrypoint: ["/bin/sh", "-c", "while true; do echo 1 >/dev/null 2>/dev/null; sleep 1; done"]
+    entrypoint: ["cd", "/app/zero4go", "&&", "/app/zero4go/zero4go-linux-amd64"]
+    volumes:
+      - ./META-INF:/app/zero4go/META-INF:ro
+      - ./config:/app/zero4go/config:ro
+      - ./static:/app/zero4go/static:ro
+      - ./dist/zero4go-linux-amd64:/app/zero4go/zero4go-linux-amd64:ro
+    restart: always
+    networks:
+      br0:
+        ipv4_address: 172.16.197.132
+
+
+

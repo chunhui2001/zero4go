@@ -19,8 +19,7 @@ func NowTimestamp() int64 {
 }
 
 func RootDir() string {
-
-	var appRoot = os.Getenv("APP_ROOT")
+	var appRoot = os.Getenv("WORK_DIR")
 
 	if appRoot != "" {
 		return appRoot
@@ -29,6 +28,10 @@ func RootDir() string {
 	dir, _ := os.Getwd()
 
 	return dir
+}
+
+func TempDir() string {
+	return os.TempDir()
 }
 
 func FileExists(name string) (bool, error) {

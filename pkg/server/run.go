@@ -161,6 +161,8 @@ func (a *Application) Run(f func(*grpc.Server)) {
 
 	// httpserver
 	go func() {
+		Log.Infof("RootDir: val=%s", utils.RootDir())
+		Log.Infof("TempDir: val=%s", utils.TempDir())
 		Log.Infof("Congratulations! Your server startup successfully, Listening and serving HTTP on %s", config.AppSetting.AppPort)
 
 		if err := srv.Serve(l); err != nil {

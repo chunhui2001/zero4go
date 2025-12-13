@@ -22,7 +22,7 @@ type CLI struct {
 }
 
 func (c *CLI) Run() error {
-	log.Printf("root command running env=%s", c.Env)
+	log.Printf("root command running: env=%s", c.Env)
 
 	return nil
 }

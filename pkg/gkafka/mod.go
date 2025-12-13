@@ -31,7 +31,7 @@ var KafkaProducer *KafkaClient
 func Init() {
 
 	if !Settings.Enable {
-		Log.Infof("Kafka-Initialized-Disabled: val=%s", Settings.Enable)
+		Log.Infof("Kafka-Initialized-Disabled: val=%t", Settings.Enable)
 		return
 	}
 

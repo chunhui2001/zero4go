@@ -77,7 +77,7 @@ get:
 # make run e=development 
 run:
 	rm -rf gin-bin >/dev/null 2>&1
-	TZ=$(zone) GIN_ENV=$(e) go run .
+	TZ=$(zone) GIN_ENV=$(e) WORK_DIR=$(PWD) go run .
 
 ### 启动调试程序, 当代码变化时自动重启
 # make dev
@@ -95,20 +95,15 @@ Built1:
 Built2:
 	env GOOS=linux  GOARCH=amd64 CGO_ENABLED=1 $(GOPROXY) && go build -buildvcs -ldflags "-X main.Name=$(APP_NAME) -X main.Author=$(COMMITER) -X main.Commit=$(GIT_HASH) -X main.Time=$(TIME)" -o ./dist/$(APP_NAME)-linux-amd64 ./main.go
 
-### 构建跨平台的可执行程序
-Built3:
-	env GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 $(GOPROXY) && go build -buildvcs -ldflags "-X main.Name=$(APP_NAME) -X main.Author=$(COMMITER) -X main.Commit=$(GIT_HASH) -X main.Time=$(TIME)" -o ./dist/$(APP_NAME)-darwin-arm64 ./main.go
-
 Build:
-	docker run --platform linux/amd64 --rm -it -v $(PWD):/dist:rw --name build_$(APP_NAME) chunhui2001/ubuntu_20.04_dev:golang_1.23 /bin/bash -c 'cd /dist && make -f Makefile install Built2' -m 4g
+	docker run --platform linux/amd64 --rm -it -v $(PWD):/app:rw --name build_$(APP_NAME) chunhui2001/ubuntu_20.04_dev:golang_1.25 /bin/bash -c 'cd /app && make -f Makefile install Built2' -m 4g
 
 ### 通过容器启动
 up: rm
 	docker-compose -f docker-compose.yml up -d
 
 serve:
-	./dist/$(APP_NAME)-darwin-amd64
-	@#GIN_ENV=$(e) ./dist/$(APP_NAME)-darwin-arm64
+	TZ=$(zone) GIN_ENV=$(e) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-arm64
 
 ### 1 = stdout = normal output of a command
 ### 2 = stderr = error output of a command
