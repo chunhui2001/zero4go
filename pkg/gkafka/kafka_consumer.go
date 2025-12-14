@@ -3,6 +3,7 @@ package gkafka
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/IBM/sarama"
 
@@ -95,13 +96,17 @@ func ReadMessage(msg *sarama.ConsumerMessage) (string, string) {
 //	return nil
 //}
 
-func CreateConsumerGroup(brokers string, groupId string, topic string, handler sarama.ConsumerGroupHandler) error {
+func CreateConsumerGroup(brokers string, groupId string, topic string, offsets int64, handler sarama.ConsumerGroupHandler) error {
 	topics := []string{topic}
 
 	config := sarama.NewConfig()
 	config.Version = sarama.V3_6_0_0
 	config.Consumer.Return.Errors = true
-	config.Consumer.Offsets.Initial = sarama.OffsetNewest
+	config.Consumer.Offsets.Initial = offsets
+	//config.Consumer.Offsets.Initial = sarama.OffsetNewest
+	// config.Consumer.Offsets.AutoCommit.Enable = true, Sarama 定时 commit
+	config.Consumer.Group.Session.Timeout = 10 * time.Second   // 如果 broker 连续 10 秒没收到心跳 → 踢出 consumer → rebalance
+	config.Consumer.Group.Heartbeat.Interval = 3 * time.Second // 每 3 秒发送一次心跳
 
 	consumerGroup, err := sarama.NewConsumerGroup(strings.Split(brokers, ","), groupId, config)
 

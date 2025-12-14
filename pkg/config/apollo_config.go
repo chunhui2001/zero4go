@@ -24,10 +24,14 @@ import (
 )
 
 func ReadApolloConfig(v *viper.Viper) {
-	var apolloEnv = envName
+	var apolloEnv = EnvName
 	var apolloName = os.Getenv("APP_NAME")
 	var apolloConfig = os.Getenv("APOLLO_CONFIG")
 	var apolloSpace = os.Getenv("APOLLO_NAMESPACE")
+
+	if len(apolloConfig) == 0 {
+		return
+	}
 
 	if len(apolloSpace) == 0 {
 		apolloSpace = "application.properties,application.yaml"
@@ -113,14 +117,6 @@ func readResponse(res *http.Response) []byte {
 	}
 
 	return data
-}
-
-func readProperties(v *viper.Viper, responseMap map[string]any) {
-	config := responseMap["configurations"].(map[string]any)
-
-	for key, val := range config {
-		v.SetDefault(strings.TrimSpace(key), strings.TrimSpace(val.(string)))
-	}
 }
 
 func readYaml(v *viper.Viper, responseMap map[string]any) {

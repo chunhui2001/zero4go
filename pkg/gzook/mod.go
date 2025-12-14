@@ -60,7 +60,7 @@ func (z *ZooClient) Info() {
 	for _, addr := range addrs {
 		var status = z.Srvr(addr)
 
-		re := regexp.MustCompile(`(\d+\.\d+\.\d+)--([\w\W]*?)(Mode: ((follower)|(leader)))`)
+		re := regexp.MustCompile(`(\d+\.\d+\.\d+)-([\w\W]*?)(Mode: ((follower)|(leader)))`)
 		matches := re.FindStringSubmatch(status)
 		var version string
 		var mode string

@@ -9,7 +9,7 @@ import (
 )
 
 func configRoot() string {
-	return filepath.Join(utils.RootDir(), configFolder)
+	return filepath.Join(utils.RootDir(), ConfigurationFolder)
 }
 
 func readConfig() *viper.Viper {
@@ -22,28 +22,29 @@ func readConfig() *viper.Viper {
 	return v
 }
 
-func configFiles() []string {
-	var _enfFile = ".env." + envName
-
-	//var _applicationPropsFile = "application.properties"
-	//var _applicationPropsFileEnv = "application-" + env + ".properties"
-	//
-	//var _applicationYamlFile = "application.properties"
-	//var _applicationYamlsFileEnv = "application-" + env + ".properties"
+func configFilesEnv() []string {
+	var _enfFile = ".env." + EnvName
 
 	var configFiles []string
 
 	configFiles = append(configFiles, envDefault)
-
-	//if exists, _ := utils.FileExists(filepath.Join(configRoot(), _enfFile)); exists {
-
 	configFiles = append(configFiles, _enfFile)
-	//}
+	
+	return configFiles
+}
 
-	//if exists, _ := utils.FileExists(filepath.Join(configRoot(), _enfFile)); exists {
-	//
-	//	configFiles = append(configFiles, _enfFile)
-	//}
+func configFilesAppliction() []string {
+	var _fil1 = "application.properties"
+	var _fil2 = "application-" + EnvName + ".properties"
+
+	var _fil3 = "application.yml"
+	var _fil4 = "application.yaml"
+	var _fil5 = "application-" + EnvName + ".yml"
+	var _fil6 = "application-" + EnvName + ".yaml"
+
+	var configFiles []string
+
+	configFiles = append(configFiles, _fil1, _fil2, _fil3, _fil4, _fil5, _fil6)
 
 	return configFiles
 }

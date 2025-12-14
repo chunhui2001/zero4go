@@ -3,7 +3,25 @@
 https://proxy.golang.org/github.com/chunhui2001/zero4go/@v/list
 
 # 查看某个 Go Module 的 最新版本
-$ go list -m -versions github.com/gin-contrib/pongo2
+$ go list -m -versions github.com/chunhui2001/zero4go
+
+# 直连 GitHub
+# GOPROXY=direct go list -m github.com/chunhui2001/zero4go@v1.0.0
+
+# 检查你仓库真实存在的版本
+$ git ls-remote --tags https://github.com/chunhui2001/zero4go.git
+
+# 快速「一锤定音」诊断命令
+$ GOPROXY=direct go get -x github.com/chunhui2001/zero4go@v1.0.0
+
+
+# 你以后发版一定要记住的铁律
+> Go module 的版本号一旦被请求过, 就永远不能“补救”
+> commit → tag → push → 再 go get
+> ❌ 反过来一次，这个版本号就“污染”了
+
+# 清理 mod cache
+$ go clean -modcache 
 
 # go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 # go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
@@ -38,8 +56,7 @@ $ gqlgen generate
 $ mkdir zero4go01 && cd zero4go01
 $ go mod init zero4go01
 
-github.com/chunhui2001/zero4go
-$ go get -u github.com/chunhui2001/zero4go@latest
+$ go clean -modcache && go get -u github.com/chunhui2001/zero4go@latest
 
 $ go get && go run .
 

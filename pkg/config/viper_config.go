@@ -2,13 +2,17 @@ package config
 
 import (
 	"log"
+	"path/filepath"
+	"strings"
 
+	"github.com/chunhui2001/zero4go/pkg/utils"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 func ViperConfig() *viper.Viper {
 	var configRoot = configRoot()
-	var filenames = configFiles()
+	var filenames1 = configFilesEnv()
 
 	v := viper.New()
 
@@ -39,9 +43,56 @@ func ViperConfig() *viper.Viper {
 		return v
 	}
 
-	for _, name := range filenames {
+	for _, name := range filenames1 {
 		if ll := f(name, v.AllSettings()); ll != nil {
 			v = ll
+		}
+	}
+
+	var filenames2 = configFilesAppliction()
+
+	ff := func(str string) (key, value string, ok bool) {
+		idx := strings.Index(str, "=")
+
+		if idx == -1 {
+			return "", "", false
+		}
+
+		return str[:idx], str[idx+1:], true
+	}
+
+	for _, name := range filenames2 {
+		var currFile = filepath.Join(configRoot, "", name)
+
+		if b, _ := utils.FileExists(currFile); !b {
+			continue
+		}
+
+		log.Printf("Viper Configuration loaded: ConfigPath=%s, file=%s", configRoot, name)
+
+		if strings.HasSuffix(name, ".properties") {
+			var fileLines = utils.ReadAllLines(currFile)
+			var _map = map[string]interface{}{}
+
+			for _, line := range fileLines {
+				if k, v, ok := ff(line); ok {
+					_map[k] = strings.TrimSpace(v)
+				}
+			}
+
+			for key, val := range _map {
+				v.SetDefault(strings.TrimSpace(key), strings.TrimSpace(val.(string)))
+			}
+		} else {
+			// yaml
+			var yamlBytes = utils.ReadFile(currFile)
+			var _map map[string]any
+
+			yaml.Unmarshal(yamlBytes, &_map)
+
+			for key, val := range _map {
+				v.SetDefault(strings.TrimSpace(key), val)
+			}
 		}
 	}
 

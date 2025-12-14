@@ -82,7 +82,7 @@ import (
 // key: job key, 用一个 key 保证「这一秒只能执行一次」, 例如: job:2025-12-14T10:00:01
 // ttl: 不是“任务预计执行时间”, 加入 ttl=10, 即: 如果我 10 秒内没心跳，锁就释放, 业务上保证 ttl >= 1s
 // hook: 拿到锁后执行的函数
-func LeaseLock(key string, ttl time.Duration, hook func()) {
+func LeaseLock(key string, ttl time.Duration, rttl time.Duration, hook func()) {
 	locker := redislock.New(RedisClient)
 
 	// SET key value NX PX ttl
@@ -94,7 +94,7 @@ func LeaseLock(key string, ttl time.Duration, hook func()) {
 	}
 
 	// 创建取消函数，用于停止刷新
-	refreshCtxTTl := 600 * time.Millisecond
+	refreshCtxTTl := rttl
 	refreshCtx, cancel := context.WithCancel(ctx)
 
 	// 启动 goroutine 自动刷新锁 TTL
@@ -107,7 +107,7 @@ func LeaseLock(key string, ttl time.Duration, hook func()) {
 			case <-ticker.C:
 				if err := lock.Refresh(refreshCtx, ttl, nil); err != nil {
 					// Refresh 失败时，必须停止业务（或者标记失效）
-					Log.Errorf("Failed to refresh lock: Error=%s", err.Error())
+					Log.Errorf("Failed to refresh lock: Key=%s, Error=%s", key, err.Error())
 				}
 			case <-refreshCtx.Done():
 				return

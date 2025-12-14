@@ -6,9 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/chunhui2001/zero4go/pkg/stdout"
-
-	"github.com/alecthomas/kong"
 	"github.com/spf13/viper"
 
 	"github.com/chunhui2001/zero4go/pkg/elasticsearch"
@@ -20,17 +17,6 @@ import (
 	"github.com/chunhui2001/zero4go/pkg/http_client"
 	"github.com/chunhui2001/zero4go/pkg/logs"
 )
-
-type CLI struct {
-	Env    string `help:"environment name" short:"e"`
-	Config string `help:"config file path" short:"c"`
-}
-
-func (c *CLI) Run() error {
-	log.Printf("root command running: env=%s", c.Env)
-
-	return nil
-}
 
 type AppConf struct {
 	Env                  string `mapstructure:"GIN_ENV"`
@@ -53,44 +39,13 @@ var AppSetting = &AppConf{
 	RpcPort:  "0.0.0.0:50051",
 }
 
-var envName = os.Getenv("GIN_ENV")
+var ConfigurationFolder = "config"
+var EnvName = os.Getenv("GIN_ENV")
 
-var configFolder = "config"
-var envDefault = ".env"
 var viperConfig *viper.Viper
-
-var cli CLI
-
-func init() {
-	// 设置控制台日志输出
-	stdout.SetOutputWriter()
-
-	ctx := kong.Parse(&cli,
-		kong.Name("zero4go"),
-		kong.Description("Rust clap style CLI in Go using kong."),
-	)
-
-	// Run subcommand
-	if err := ctx.Run(&cli); err != nil {
-		log.Printf("error=%v", err)
-	}
-}
-
-func cliResolver() {
-
-	if cli.Config != "" {
-		configFolder = cli.Config
-	}
-
-	if cli.Env != "" {
-		envName = cli.Env
-	}
-}
+var envDefault = ".env"
 
 func OnLoad() {
-	// 解析命令行参数
-	cliResolver()
-
 	// 读取配置
 	if v1 := readConfig(); v1 != nil {
 		viperConfig = v1
@@ -174,7 +129,7 @@ func GetConfig(key string) any {
 				if i == len(keyPath)-1 {
 					return viperConfig.Get(k)
 				}
-				
+
 				return GetByPathAny(strings.Join(keyPath[i+1:], "."), val)
 			default:
 				if i == len(keyPath)-1 {
@@ -193,8 +148,6 @@ func GetByPathAny(path string, v any) any {
 	parts := strings.Split(path, ".")
 
 	cur := v
-
-	log.Printf("GetByPathAny: Key=%s", path)
 
 	for _, p := range parts {
 		switch node := cur.(type) {

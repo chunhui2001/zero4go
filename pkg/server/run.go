@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -27,8 +28,8 @@ import (
 
 	_ "github.com/chunhui2001/zero4go/pkg/bootstrap"
 
-	. "github.com/chunhui2001/zero4go/pkg"
 	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/single"
 
 	"github.com/chunhui2001/zero4go/graph"
 	"github.com/chunhui2001/zero4go/pkg/graphql"
@@ -152,7 +153,7 @@ func (a *Application) Run(f func(*grpc.Server)) {
 
 	// gRPC server
 	go func() {
-		Log.Infof("gRPC server listening on %s", config.AppSetting.RpcPort)
+		Log.Infof("%s: %s", fmt.Sprintf("%-20s", "gRPC Port"), config.AppSetting.RpcPort)
 
 		if err := grpcServer.Serve(lis); err != nil {
 			Log.Fatal(err.Error())
@@ -161,9 +162,14 @@ func (a *Application) Run(f func(*grpc.Server)) {
 
 	// httpserver
 	go func() {
-		Log.Infof("RootDir: val=%s", utils.RootDir())
-		Log.Infof("TempDir: val=%s", utils.TempDir())
-		Log.Infof("Congratulations! Your server startup successfully, Listening and serving HTTP on %s", config.AppSetting.AppPort)
+		name, offset := utils.DateOffsets()
+
+		Log.Infof("%s: %s", fmt.Sprintf("%-20s", "RootDir"), utils.RootDir())
+		Log.Infof("%s: %s", fmt.Sprintf("%-20s", "TempDir"), utils.TempDir())
+		Log.Infof("%s: %s", fmt.Sprintf("%-20s", "Zone Name"), name)
+		Log.Infof("%s: %s", fmt.Sprintf("%-20s", "Datetime Offset"), offset)
+		Log.Infof("%s: %s", fmt.Sprintf("%-20s", "Http Address"), config.AppSetting.AppPort)
+		Log.Infof("%s! %s", fmt.Sprintf("%-20s", "Congratulations"), "Your server startup and running ~")
 
 		if err := srv.Serve(l); err != nil {
 			Log.Info(err.Error())

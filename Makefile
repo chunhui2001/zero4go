@@ -4,17 +4,16 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 APP_NAME 	?=zero4go
 e 			?=local
-#e 			?=production
-c 			?=10000
+zone 		?=UTC
 zone 		?=Asia/Shanghai
-APOLLO_CONFIG ?=http://127.0.0.1:8080
-#zone 		?=UTC
-#WSS_HOST	?=ws://127.0.0.1:8080
 APP_PORT 	?=8080
 GIT_HASH 	?=$(shell git rev-parse HEAD)
 COMMITER 	?=$(shell git log -1 --pretty=format:'%ae')
 PWD 		?=$(shell pwd)
 TIME 		?=$(shell date +%s)
+
+APOLLO_CONFIG ?=http://127.0.0.1:8080
+
 CGO_ENABLED ?=0
 GOPROXY 	?=go env -w GO111MODULE=on && go env -w GOPROXY=https://goproxy.cn,direct
 
@@ -78,7 +77,7 @@ get:
 # make run e=development 
 run:
 	rm -rf gin-bin >/dev/null 2>&1
-	TZ=$(zone) GIN_ENV=$(e) APOLLO_CONFIG=$(APOLLO_CONFIG) APP_NAME=$(APP_NAME) WORK_DIR=$(PWD) go run .
+	TZ=$(zone) GIN_ENV=$(e) APOLLO_CONFIG=$(APOLLO_CONFIG) APP_NAME=$(APP_NAME) WORK_DIR=$(PWD) go run -trimpath .
 
 ### 启动调试程序, 当代码变化时自动重启
 # make dev
@@ -91,10 +90,10 @@ lint:
 
 ### 构建跨平台的可执行程序
 Built1:
-	env GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 $(GOPROXY) && go build -buildvcs -ldflags "-X main.Name=$(APP_NAME) -X main.Author=$(COMMITER) -X main.Commit=$(GIT_HASH) -X main.Time=$(TIME)" -o ./dist/$(APP_NAME)-darwin-amd64 ./main.go
+	env GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 $(GOPROXY) && go build -trimpath -buildvcs -ldflags "-X main.Name=$(APP_NAME) -X main.Author=$(COMMITER) -X main.Commit=$(GIT_HASH) -X main.Time=$(TIME)" -o ./dist/$(APP_NAME)-darwin-amd64 ./main.go
 
 Built2:
-	env GOOS=linux  GOARCH=amd64 CGO_ENABLED=1 $(GOPROXY) && go build -buildvcs -ldflags "-X main.Name=$(APP_NAME) -X main.Author=$(COMMITER) -X main.Commit=$(GIT_HASH) -X main.Time=$(TIME)" -o ./dist/$(APP_NAME)-linux-amd64 ./main.go
+	env GOOS=linux  GOARCH=amd64 CGO_ENABLED=1 $(GOPROXY) && go build -trimpath -buildvcs -ldflags "-X main.Name=$(APP_NAME) -X main.Author=$(COMMITER) -X main.Commit=$(GIT_HASH) -X main.Time=$(TIME)" -o ./dist/$(APP_NAME)-linux-amd64 ./main.go
 
 Build:
 	docker run --platform linux/amd64 --rm -it -v $(PWD):/app:rw --name build_$(APP_NAME) chunhui2001/ubuntu_20.04_dev:golang_1.25 /bin/bash -c 'cd /app && make -f Makefile install Built2' -m 4g

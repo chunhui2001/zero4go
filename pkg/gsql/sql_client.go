@@ -38,6 +38,8 @@ func (s *MySQLClient) Insert(tplName string, params map[string]any) (int64, erro
 		return -1, err
 	}
 
+	defer stmt.Close()
+
 	// format all args at once
 	result, err := stmt.ExecContext(ctx, binds...)
 
@@ -66,6 +68,8 @@ func (s *MySQLClient) Update(tplName string, params map[string]any) (int64, erro
 		return -1, err
 	}
 
+	defer stmt.Close()
+
 	// format all args at once
 	result, err := stmt.ExecContext(ctx, binds...)
 
@@ -93,6 +97,8 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 
 		return -1, err
 	}
+
+	defer stmt.Close()
 
 	// format all args at once
 	result, err := stmt.ExecContext(ctx, binds...)

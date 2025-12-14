@@ -34,17 +34,16 @@ func init() {
 // @daily (or @midnight)  | Run once a day, midnight                   | 0 0 0 * * *
 // @hourly                | Run once an hour, beginning of hour        | 0 0 * * * *
 // ###################################################################################
-func AddTask(name string, JobKey string, spec string, tasks func(key string)) {
-
+func AddTask(name string, JobID string, spec string, tasks func(key string)) {
 	_ = c.AddFunc(spec, func() {
-		var _key = JobKey + "#" + time.Now().UTC().Format("2006-01-02T15:04:05")
+		gredis.LeaseLock(JobID, 1*time.Second, 50*time.Millisecond, func() {
+			var _key = JobID + "#" + time.Now().UTC().Format("2006-01-02T15:04:05")
 
-		gredis.LeaseLock(_key, 1*time.Second, func() {
-			Log.Infof("执行定时任务: Name=%s, Key=%s, PID=%d", name, _key, os.Getppid())
+			Log.Debugf("执行定时任务: Name=%s, Expr=%s, Key=%s, PID=%d", name, spec, _key, os.Getppid())
 
 			tasks(_key)
 		})
 	})
 
-	Log.Infof(`注册了一个定时任务: Name=%s, JobKey=%s, Expr='%s'`, name, JobKey, spec)
+	Log.Infof(`注册了一个定时任务: Name=%s, JobID=%s, Expr='%s'`, name, JobID, spec)
 }
