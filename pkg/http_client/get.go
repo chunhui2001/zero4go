@@ -57,3 +57,17 @@ func HttpGet(reqUrl string) ([]byte, error) {
 
 	return body, nil
 }
+
+func SendRequest(reqUrl string) (*http.Response, error) {
+	req, _ := http.NewRequest("GET", reqUrl, nil)
+
+	res, err := (&http.Client{}).Do(req)
+
+	if err != nil {
+		Log.Printf("SendRequest-Failed: Url=%s, Error=%s", reqUrl, err)
+
+		return nil, err
+	}
+
+	return res, err
+}

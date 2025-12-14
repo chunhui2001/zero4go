@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -89,6 +91,22 @@ func ToJsonString(v any) string {
 	return string(b)
 }
 
+func StrToInt(str string) int {
+	if str == "" {
+		return 0
+	}
+
+	intVar, err := strconv.Atoi(str)
+
+	if err != nil {
+		log.Printf("StrToInt: value=%s, Error=%s", str, err.Error())
+
+		panic(err)
+	}
+
+	return intVar
+}
+
 func NormalizeSpace(s string) string {
 	// 1. 去掉所有换行符
 	s = strings.ReplaceAll(s, "\n", " ")
@@ -125,6 +143,16 @@ func OfMap(kv ...any) map[string]any {
 	}
 
 	return m
+}
+
+func ToMap(buf []byte) (map[string]any, error) {
+	var m map[string]any
+
+	if err := json.Unmarshal(buf, &m); err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
 
 func ToBase64String(s string) string {

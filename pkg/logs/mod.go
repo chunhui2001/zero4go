@@ -3,6 +3,7 @@ package logs
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -17,10 +18,28 @@ func (s SizeMB) MarshalJSON() ([]byte, error) {
 	return json.Marshal(fmt.Sprintf("%dm", s))
 }
 
+func (s *SizeMB) UnmarshalJSON(data []byte) error {
+	// 去掉引号
+	str := string(data)
+
+	*s = SizeMB(utils.StrToInt(strings.ReplaceAll(strings.ToLower(str), "m", "")))
+
+	return nil
+}
+
 type AgeDAY int
 
 func (s AgeDAY) MarshalJSON() ([]byte, error) {
 	return json.Marshal(fmt.Sprintf("%dday", s))
+}
+
+func (s *AgeDAY) UnmarshalJSON(data []byte) error {
+	// 去掉引号
+	str := string(data)
+
+	*s = AgeDAY(utils.StrToInt(strings.ReplaceAll(strings.ToLower(str), "day", "")))
+
+	return nil
 }
 
 type LogConf struct {

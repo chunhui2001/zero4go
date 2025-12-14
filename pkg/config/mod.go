@@ -3,6 +3,8 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/chunhui2001/zero4go/pkg/stdout"
 
@@ -149,20 +151,79 @@ func OnLoad() {
 	}
 }
 
-// GetEnv returns an environment variable or a default value if not present
-func GetEnv(key, defaultValue string) string {
+func GetConfig(key string) any {
+	var keyPath = strings.Split(key, ".")
 
-	value := os.Getenv(key)
+	for i, k := range keyPath {
 
-	if value != "" {
-		return value
+		if viperConfig.Get(k) != nil {
+			var val = viperConfig.Get(k)
+
+			switch val.(type) {
+			case float64, float32:
+				return val
+			case string:
+				return val
+			case bool:
+				return val
+			case byte:
+				return val
+			case []uint8:
+				return val
+			case map[string]any:
+				if i == len(keyPath)-1 {
+					return viperConfig.Get(k)
+				}
+				
+				return GetByPathAny(strings.Join(keyPath[i+1:], "."), val)
+			default:
+				if i == len(keyPath)-1 {
+					return viperConfig.Get(k)
+				}
+
+				return GetConfig(strings.Join(keyPath[i+1:], "."))
+			}
+		}
 	}
 
-	value = viperConfig.GetString(key)
+	return viperConfig.Get(key)
+}
 
-	if value != "" {
-		return value
+func GetByPathAny(path string, v any) any {
+	parts := strings.Split(path, ".")
+
+	cur := v
+
+	log.Printf("GetByPathAny: Key=%s", path)
+
+	for _, p := range parts {
+		switch node := cur.(type) {
+		case map[string]any:
+			val, ok := node[p]
+
+			if !ok {
+				return nil
+			}
+
+			cur = val
+
+		case []any:
+			idx, err := strconv.Atoi(p)
+
+			if err != nil || idx < 0 || idx >= len(node) {
+				return nil
+			}
+
+			cur = node[idx]
+
+		default:
+			return nil
+		}
 	}
 
-	return defaultValue
+	return cur
+}
+
+func Configurations() map[string]any {
+	return viperConfig.AllSettings()
 }

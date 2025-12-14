@@ -7,6 +7,7 @@ e 			?=local
 #e 			?=production
 c 			?=10000
 zone 		?=Asia/Shanghai
+APOLLO_CONFIG ?=http://127.0.0.1:8080
 #zone 		?=UTC
 #WSS_HOST	?=ws://127.0.0.1:8080
 APP_PORT 	?=8080
@@ -77,7 +78,7 @@ get:
 # make run e=development 
 run:
 	rm -rf gin-bin >/dev/null 2>&1
-	TZ=$(zone) GIN_ENV=$(e) WORK_DIR=$(PWD) go run .
+	TZ=$(zone) GIN_ENV=$(e) APOLLO_CONFIG=$(APOLLO_CONFIG) APP_NAME=$(APP_NAME) WORK_DIR=$(PWD) go run .
 
 ### 启动调试程序, 当代码变化时自动重启
 # make dev
@@ -108,7 +109,7 @@ up: rm
 	docker logs -f $(APP_NAME)
 
 serve:
-	TZ=$(zone) GIN_ENV=$(e) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-amd64
+	TZ=$(zone) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-amd64 -e $(e)
 
 ### 1 = stdout = normal output of a command
 ### 2 = stderr = error output of a command
