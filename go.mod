@@ -6,6 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.84
 	github.com/IBM/sarama v1.46.3
 	github.com/alecthomas/kong v1.13.0
+	github.com/bsm/redislock v0.9.4
 	github.com/bytedance/gopkg v0.1.3
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/elastic/go-elasticsearch/v9 v9.2.1
@@ -18,6 +19,7 @@ require (
 	github.com/hhsnopek/etag v0.0.0-20171206181245-aea95f647346
 	github.com/opensearch-project/opensearch-go/v4 v4.5.0
 	github.com/redis/go-redis/v9 v9.17.2
+	github.com/robfig/cron v1.2.0
 	github.com/rs/zerolog v1.34.0
 	github.com/segmentio/kafka-go v0.4.49
 	github.com/spf13/viper v1.21.0

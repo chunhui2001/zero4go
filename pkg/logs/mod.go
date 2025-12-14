@@ -1,6 +1,7 @@
 package logs
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -10,14 +11,26 @@ import (
 	"github.com/chunhui2001/zero4go/pkg/utils"
 )
 
+type SizeMB int
+
+func (s SizeMB) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fmt.Sprintf("%dm", s))
+}
+
+type AgeDAY int
+
+func (s AgeDAY) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fmt.Sprintf("%dday", s))
+}
+
 type LogConf struct {
 	LogLevel          string `mapstructure:"LOG_LEVEL" json:"log_level"`                       // debug, into, error, warn
 	LogOutput         string `mapstructure:"LOG_OUTPUT" json:"log_output"`                     // console,file,kafka
 	LogColor          bool   `mapstructure:"LOG_COLOR" json:"log_color"`                       // true
 	LogFilePath       string `mapstructure:"LOG_FILE_PATH" json:"log_file_path"`               // /tmp/logs
-	LogFileMaxSize    int    `mapstructure:"LOG_FILE_MAX_SIZE" json:"log_file_max_size"`       // 5 (MB)
+	LogFileMaxSize    SizeMB `mapstructure:"LOG_FILE_MAX_SIZE" json:"log_file_max_size"`       // 5 (MB)
 	LogFileMaxBackups int    `mapstructure:"LOG_FILE_MAX_BACKUPS" json:"log_file_max_backups"` // 10
-	LogFileMaxAge     int    `mapstructure:"LOG_FILE_MAX_AGE" json:"log_file_max_age"`         // 30
+	LogFileMaxAge     AgeDAY `mapstructure:"LOG_FILE_MAX_AGE" json:"log_file_max_age"`         // 30
 	LogKafkaServer    string `mapstructure:"LOG_KAFKA_SERVER" json:"log_kafka_server"`         // 127.0.0.1:9092
 	LogKafkaTopic     string `mapstructure:"LOG_KAFKA_TOPIC" json:"log_kafka_topic"`           // app_log
 }

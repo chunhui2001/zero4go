@@ -20,7 +20,7 @@ func NowTimestamp() int64 {
 }
 
 func DateTimeUTCString() string {
-	return time.Now().Format(TimeStampFormat)
+	return time.Now().UTC().Format(TimeStampFormat)
 }
 
 func RootDir() string {
