@@ -3,10 +3,12 @@ package logs
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/chunhui2001/zero4go/pkg/utils"
 	"github.com/rs/zerolog"
 	"gopkg.in/natefinch/lumberjack.v2"
 
@@ -16,6 +18,13 @@ import (
 var SkipFieldsForConsole = []string{"@timestamp", "@version", "app", "build_git_hash", "build_git_version", "build_name", "build_timestamp", "captain_gen", "captain_seq", "env", "hostname", "logger_name", "thread_name"}
 
 func NewLogger(conf *LogConf) Logger {
+	if conf.LogLevel == "off" {
+		log.Printf("logger initialized: %v", utils.ToJsonString(conf))
+
+		return Logger{
+			Logger: zerolog.New(io.Discard),
+		}
+	}
 
 	fileEnable := strings.Contains(conf.LogOutput, "file")
 	consoleEnable := strings.Contains(conf.LogOutput, "console")
@@ -42,9 +51,9 @@ func NewLogger(conf *LogConf) Logger {
 		rotate := &lumberjack.Logger{
 			Compress:   true, // gzip 压缩旧文件
 			Filename:   conf.LogFilePath,
-			MaxSize:    Max(conf.LogFileMaxSize, 10),    // MB，超过后切分
-			MaxBackups: Max(conf.LogFileMaxBackups, 10), // 最多保留 10 个旧文件
-			MaxAge:     Max(conf.LogFileMaxAge, 30),     // 保留 30 天
+			MaxSize:    Max(int(conf.LogFileMaxSize), 10), // MB，超过后切分
+			MaxBackups: Max(conf.LogFileMaxBackups, 10),   // 最多保留 10 个旧文件
+			MaxAge:     Max(int(conf.LogFileMaxAge), 30),  // 保留 30 天
 		}
 
 		writers = append(writers, rotate)
@@ -86,7 +95,7 @@ func NewLogger(conf *LogConf) Logger {
 		logger.Errorf("c zerolog err %v", err)
 	}
 
-	logger.Infof("logger initialized: %v", conf)
+	logger.Infof("logger initialized: %v", utils.ToJsonString(conf))
 
 	return logger
 }

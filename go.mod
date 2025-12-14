@@ -6,6 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.84
 	github.com/IBM/sarama v1.46.3
 	github.com/alecthomas/kong v1.13.0
+	github.com/bsm/redislock v0.9.4
 	github.com/bytedance/gopkg v0.1.3
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/elastic/go-elasticsearch/v9 v9.2.1
