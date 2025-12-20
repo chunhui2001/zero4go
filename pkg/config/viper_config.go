@@ -30,10 +30,8 @@ func ViperConfig() *viper.Viper {
 		v.AddConfigPath(configRoot)
 		v.AutomaticEnv() // 将读取当前目录下的 .env 配置文件或"环境变量", .env 优先级最高
 
-		err := v.ReadInConfig()
-
-		if err != nil {
-			// log.Printf("Viper Configuration load error: ConfigPath=%s, file=%s, Error=%v", configRoot, file, err)
+		if err := v.ReadInConfig(); err != nil {
+			log.Printf("Viper Configuration load error: ConfigPath=%s, file=%s, Error=%v", configRoot, file, err)
 
 			return nil
 		}

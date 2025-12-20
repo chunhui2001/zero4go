@@ -15,12 +15,11 @@ services:
     hostname: zero4go
     ports:
       - "8111:8080"
-    #extra_hosts:
-    #  - "host.docker.internal:host-gateway"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      #- TZ=Asia/Shanghai
-      - TZ=UTC
-      - GIN_ENV=dev
+      #- TZ=UTC
+      - TZ=Asia/Shanghai
       - WORK_DIR=/app/zero4go
     #entrypoint: ["/bin/sh", "-c", "while true; do echo 1 >/dev/null 2>/dev/null; sleep 1; done"]
     entrypoint: ["/app/zero4go/zero4go-linux-amd64", "-e", "dev"]

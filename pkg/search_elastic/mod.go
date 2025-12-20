@@ -1,4 +1,4 @@
-package elasticsearch
+package search_elastic
 
 import (
 	"bytes"

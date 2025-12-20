@@ -5,7 +5,7 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 APP_NAME 	?=zero4go
 e 			?=local
 zone 		?=UTC
-zone 		?=Asia/Shanghai
+#zone 		?=Asia/Shanghai
 APP_PORT 	?=8080
 GIT_HASH 	?=$(shell git rev-parse HEAD)
 COMMITER 	?=$(shell git log -1 --pretty=format:'%ae')
@@ -42,6 +42,19 @@ install:
 	@#$(GOPROXY) && go install github.com/99designs/gqlgen
 	$(GOPROXY) && go get -u $(mod)
 	@#$(GOPROXY) && go install $(mod)
+
+update_deps:
+	@echo "✅ 1. 查看当前可升级依赖"
+	go list -u -m all
+
+	@echo "✅ 2. 更新所有依赖到最新兼容版本"
+	go get -u ./...
+
+	@echo "✅ 3. 清理未使用的依赖"
+	go mod tidy
+
+	@echo "✅ 4. 完成！当前依赖版本："
+	go list -m all
 
 gqlinit:
 	rm -rf graph

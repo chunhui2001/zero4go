@@ -2,11 +2,13 @@ package gsql
 
 import (
 	"fmt"
+	"path/filepath"
 	"text/template"
 	"time"
 
 	"database/sql"
 
+	"github.com/chunhui2001/zero4go/pkg/utils"
 	_ "github.com/go-sql-driver/mysql"
 
 	. "github.com/chunhui2001/zero4go/pkg/logs"
@@ -63,7 +65,9 @@ func Init() {
 		return
 	}
 
-	if tpl, err := template.New("").Funcs(funcMaps()).ParseGlob(Settings.Location); err != nil {
+	var location = filepath.Join(utils.RootDir(), Settings.Location)
+
+	if tpl, err := template.New("").Funcs(funcMaps()).ParseGlob(location); err != nil {
 		panic(err)
 	} else {
 		Client = MySQLClient{

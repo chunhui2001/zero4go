@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/alecthomas/kong"
-	"github.com/chunhui2001/zero4go/pkg/build_info"
 	"github.com/chunhui2001/zero4go/pkg/stdout"
 	"github.com/chunhui2001/zero4go/pkg/x"
 )
@@ -22,7 +21,6 @@ type CLI struct {
 }
 
 func (c *CLI) Run() error {
-	build_info.INFO.Info()
 	x.Info()
 
 	// 设置命令行参数

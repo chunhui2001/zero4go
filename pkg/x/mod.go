@@ -7,6 +7,7 @@ import (
 	"log"
 	"runtime"
 
+	"github.com/chunhui2001/zero4go/pkg/build_info"
 	"github.com/klauspost/cpuid/v2"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/host"
@@ -16,6 +17,7 @@ import (
 )
 
 func Info() {
+	log.Printf(build_info.INFO.Info())
 
 	log.Printf("--------------------- CPU INFO ---------------------")
 	log.Printf("Hostname: %s", utils.Hostname())

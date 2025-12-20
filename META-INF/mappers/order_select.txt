@@ -1,0 +1,13 @@
+{{ $CTX := $.CTX }}
+
+select
+    *
+from
+    t_orders
+where 1=1
+    {{- if .id }}
+        and f_id = {{ sql_bind .id .CTX }}
+    {{- end }}
+order by
+    f_id desc
+;

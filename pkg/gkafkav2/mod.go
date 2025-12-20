@@ -1,4 +1,4 @@
-package gokafkav2
+package gkafkav2
 
 type Msg struct {
 	Key       string

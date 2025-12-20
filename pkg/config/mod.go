@@ -6,16 +6,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/spf13/viper"
-
-	"github.com/chunhui2001/zero4go/pkg/elasticsearch"
-	"github.com/chunhui2001/zero4go/pkg/elasticsearch_openes"
 	"github.com/chunhui2001/zero4go/pkg/gkafka"
 	"github.com/chunhui2001/zero4go/pkg/gredis"
 	"github.com/chunhui2001/zero4go/pkg/gsql"
 	"github.com/chunhui2001/zero4go/pkg/gzook"
 	"github.com/chunhui2001/zero4go/pkg/http_client"
 	"github.com/chunhui2001/zero4go/pkg/logs"
+	"github.com/chunhui2001/zero4go/pkg/search_elastic"
+	"github.com/chunhui2001/zero4go/pkg/search_openes"
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 )
 
 type AppConf struct {
@@ -41,7 +41,36 @@ var AppSetting = &AppConf{
 
 var viperConfig *viper.Viper
 
+var onChangeFuncs []func()
+
+// RegisterOnChange 注册回调函数
+func RegisterOnChange(f func()) {
+	onChangeFuncs = append(onChangeFuncs, f)
+}
+
+// TriggerOnChange 主动触发回调
+func TriggerOnChange() {
+	for _, f := range onChangeFuncs {
+		f()
+	}
+}
+
 func init() {
+	//RegisterOnChange(loadConfig)
+
+	// 5️⃣ 监听文件变化
+	viper.WatchConfig()
+
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		log.Println("Config changed:", e.Name)
+	})
+
+	loadConfig()
+
+	// TriggerOnChange()
+}
+
+func loadConfig() {
 	// 读取配置
 	if v1 := readConfig(); v1 != nil {
 		viperConfig = v1
@@ -82,13 +111,13 @@ func init() {
 			os.Exit(3)
 		}
 
-		if err := v1.Unmarshal(elasticsearch.Settings); err != nil {
+		if err := v1.Unmarshal(search_elastic.Settings); err != nil {
 			log.Printf("viper parse ESConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
 
 			os.Exit(3)
 		}
 
-		if err := v1.Unmarshal(elasticsearch_openes.Settings); err != nil {
+		if err := v1.Unmarshal(search_openes.Settings); err != nil {
 			log.Printf("viper parse ESConf error: configRoot=%s, errorMessage=%v", configRoot(), err)
 
 			os.Exit(3)

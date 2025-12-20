@@ -1,4 +1,4 @@
-package elasticsearch_openes
+package search_openes
 
 import (
 	"bytes"

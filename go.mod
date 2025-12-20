@@ -11,6 +11,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/confluentinc/confluent-kafka-go/v2 v2.12.0
 	github.com/elastic/go-elasticsearch/v9 v9.2.1
+	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.11.0
@@ -50,7 +51,6 @@ require (
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.8.0 // indirect
-	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
