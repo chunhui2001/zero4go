@@ -61,7 +61,7 @@ func readNamespace(v *viper.Viper, apolloServer string, apolloName string, apoll
 			}
 		} else {
 
-			log.Printf("Apollo Configuration Failed: Url=%s, Namespace=%s, Error=%s", s1, namespace, err.Error())
+			log.Printf("Apollo Configuration Failed: Url=%s, Namespace=%s", s1, namespace)
 		}
 	}
 }

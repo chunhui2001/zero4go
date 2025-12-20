@@ -3,81 +3,110 @@ package gredis
 import (
 	"context"
 	"strconv"
-	"time"
 
 	. "github.com/chunhui2001/zero4go/pkg/logs"
 )
 
-type String interface {
-	~string | ~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
+type Number interface {
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
 }
 
-type RedisBlockingQueue[T String] struct {
-	Key string
-	Len int64
+type RedisBlockingQueue[T Number] struct {
+	Key      string
+	MaxCount int64
+	MaxVal   int64 // 当前队列里的最大值
+	LastVal  int64 // 当前队列里的最后一个值
 }
 
-func (q *RedisBlockingQueue[T]) Push(values ...T) {
+func (q *RedisBlockingQueue[T]) Push(values ...T) (int64, error) {
 	if len(values) == 0 {
 
-		return
+		return 0, nil
 	}
 
 	// Lua 原子安全 push，固定容量
 	var _lua = `
-local maxLen = tonumber(ARGV[1])
-local curLen = redis.call('LLEN', KEYS[1])
+local maxLen 	= tonumber(ARGV[1])
+local curLen 	= redis.call('LLEN', KEYS[1])
+local maxKey 	= KEYS[1] .. "_max"
+local lastKey 	= KEYS[1] .. "_last"
+
 local pushCount = #ARGV - 1
 
-if curLen + pushCount > maxLen then
+local curMax 	= redis.call('GET', maxKey)
+curMax 			= curMax and tonumber(curMax) or 0
 
-    return 0
+if curLen + pushCount > maxLen then
+	local last 		= redis.call('LINDEX', KEYS[1], -1)
+	last 			= last and tonumber(last) or 0
+
+    return {0, curMax, last}
 end
 
 local values = {}
 
 for i = 2, #ARGV do
-    values[#values + 1] = ARGV[i]
+    local v = tonumber(ARGV[i])
+
+    if v then
+        values[#values + 1] = ARGV[i]
+
+        if not curMax or v > curMax then
+            curMax = v
+        end
+    end
 end
 
-redis.call('RPUSH', KEYS[1], unpack(values))
+if #values > 0 then
+    redis.call('RPUSH', KEYS[1], unpack(values))
+    redis.call('SET', maxKey, curMax)
 
-return pushCount
+    local ttl = redis.call('TTL', KEYS[1])
+
+    if ttl > 0 then
+        redis.call('EXPIRE', maxKey, ttl)
+    end
+end
+
+local last 		= redis.call('LINDEX', KEYS[1], -1)
+last 			= last and tonumber(last) or 0
+
+return {#values, curMax, last}
 `
 
 	args := make([]interface{}, 0, len(values)+1)
-	args = append(args, q.Len)
+	args = append(args, q.MaxCount)
 
 	for _, v := range values {
 		args = append(args, toString(v))
 	}
 
-	for {
-		count, err := RedisClient.Eval(context.Background(), _lua, []string{q.Key}, args...).Int64()
+	res, err := RedisClient.Eval(context.Background(), _lua, []string{q.Key}, args...).Result()
 
-		if err != nil {
-			Log.Errorf("Push Failed: Key=%s, Error=%+v", q.Key, err)
-			time.Sleep(time.Millisecond * 100)
+	if err != nil {
 
-			continue
-		}
-
-		var realCount = RedisClient.LLen(context.Background(), q.Key)
-
-		Log.Infof("Redis阻塞队列: Key=%s, RealSize=%d, PushSize=%d, 队列支持的最大Size=%d", q.Key, realCount, len(values), q.Len)
-
-		if count > 0 {
-			return
-		}
-
-		Log.Infof("Redis阻塞队列满，等待: Key=%s, RealSize=%d, PushSize=%d, 队列支持的最大Size=%d", q.Key, realCount, len(values), q.Len)
-
-		// 队列满，等待
-		time.Sleep(time.Millisecond * 1000)
+		return 0, err
 	}
+
+	var realCount, _ = RedisClient.LLen(context.Background(), q.Key).Result()
+
+	Log.Infof("%+v", res)
+
+	vals := res.([]interface{})
+	pushCount := vals[0].(int64)
+	q.MaxVal = vals[1].(int64)
+	q.LastVal = vals[2].(int64)
+
+	if pushCount > 0 {
+		return pushCount, nil
+	}
+
+	Log.Warnf("Redis阻塞队列满: Key=%s, 队列支持的最大Size=%d, RealSize=%d, PushSize=%d, MaxVal=%d", q.Key, q.MaxCount, realCount, len(values), q.MaxVal)
+
+	return 0, nil
 }
 
-func (q *RedisBlockingQueue[T]) Pop(batchSize int) []T {
+func (q *RedisBlockingQueue[T]) Pop(count int) []T {
 	// Lua 原子安全, 批量取
 	var _lua = `
 local vals = redis.call('LRANGE', KEYS[1], 0, ARGV[1]-1)
@@ -90,7 +119,7 @@ return vals
 `
 
 	for {
-		res, err := RedisClient.Eval(context.Background(), _lua, []string{q.Key}, batchSize).Result()
+		res, err := RedisClient.Eval(context.Background(), _lua, []string{q.Key}, count).Result()
 
 		if err != nil {
 			Log.Errorf("Pop Failed: Key=%s, Error=%+v", q.Key, err)
@@ -115,7 +144,7 @@ return vals
 	}
 }
 
-func toString[T String](v T) string {
+func toString[T Number](v T) string {
 	switch x := any(v).(type) {
 	case string:
 		return x
@@ -144,7 +173,7 @@ func toString[T String](v T) string {
 	}
 }
 
-func fromString[T String](s string) T {
+func fromString[T Number](s string) T {
 	var zero T
 
 	switch any(zero).(type) {

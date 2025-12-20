@@ -36,7 +36,7 @@ func init() {
 // ###################################################################################
 func AddTask(name string, JobID string, spec string, tasks func(key string)) {
 	_ = c.AddFunc(spec, func() {
-		gredis.LeaseLock(JobID, 1*time.Second, 50*time.Millisecond, func() {
+		gredis.Lock(JobID, 1*time.Second, 330*time.Millisecond, func() {
 			var _key = JobID + "#" + time.Now().UTC().Format("2006-01-02T15:04:05")
 
 			Log.Debugf("执行定时任务: Name=%s, Expr=%s, Key=%s, PID=%d", name, spec, _key, os.Getppid())

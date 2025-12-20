@@ -78,11 +78,11 @@ import (
 // defer cancel()
 // // 不调用 Release，让 TTL 控制执行频率
 
-// LeaseLock 租约锁
+// Lock 锁
 // key: job key, 用一个 key 保证「这一秒只能执行一次」, 例如: job:2025-12-14T10:00:01
 // ttl: 不是“任务预计执行时间”, 加入 ttl=10, 即: 如果我 10 秒内没心跳，锁就释放, 业务上保证 ttl >= 1s
 // hook: 拿到锁后执行的函数
-func LeaseLock(key string, ttl time.Duration, rttl time.Duration, hook func()) {
+func Lock(key string, ttl time.Duration, rttl time.Duration, hook func()) {
 	locker := redislock.New(RedisClient)
 
 	// SET key value NX PX ttl
@@ -116,8 +116,8 @@ func LeaseLock(key string, ttl time.Duration, rttl time.Duration, hook func()) {
 	}()
 
 	defer func() {
-		defer cancel() // 解除租约
-		// lock.Release(ctx) // 不要在任务结束时立即 Release, 让 TTL 自然过期
+		defer cancel()    // 解除租约
+		lock.Release(ctx) // 不要在任务结束时立即 Release, 让 TTL 自然过期
 	}()
 
 	// 拿到锁执行业务逻辑

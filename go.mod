@@ -3,7 +3,7 @@ module github.com/chunhui2001/zero4go
 go 1.25.5
 
 require (
-	github.com/99designs/gqlgen v0.17.84
+	github.com/99designs/gqlgen v0.17.85
 	github.com/IBM/sarama v1.46.3
 	github.com/alecthomas/kong v1.13.0
 	github.com/bsm/redislock v0.9.4
@@ -20,7 +20,7 @@ require (
 	github.com/hhsnopek/etag v0.0.0-20171206181245-aea95f647346
 	github.com/klauspost/cpuid/v2 v2.3.0
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/opensearch-project/opensearch-go/v4 v4.5.0
+	github.com/opensearch-project/opensearch-go/v4 v4.6.0
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/robfig/cron v1.2.0
 	github.com/rs/zerolog v1.34.0
@@ -61,7 +61,7 @@ require (
 	github.com/go-playground/validator/v10 v10.29.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
-	github.com/goccy/go-yaml v1.19.0 // indirect
+	github.com/goccy/go-yaml v1.19.1 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
@@ -80,7 +80,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
-	github.com/pierrec/lz4/v4 v4.1.22 // indirect
+	github.com/pierrec/lz4/v4 v4.1.23 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.57.1 // indirect
