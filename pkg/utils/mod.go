@@ -89,17 +89,17 @@ func FileExists(name string) (bool, error) {
 
 func ToString(s any) string {
 
-	switch s.(type) {
+	switch s := s.(type) {
 	case float64, float32:
 		return fmt.Sprint(s)
 	case string:
-		return fmt.Sprintf("%s", s)
+		return s
 	case bool:
 		return fmt.Sprintf("%t", s)
 	case byte:
 		return fmt.Sprintf("%x", s)
 	case []uint8:
-		return string(s.([]byte))
+		return string(s)
 	default:
 		return fmt.Sprintf("%d", s)
 	}

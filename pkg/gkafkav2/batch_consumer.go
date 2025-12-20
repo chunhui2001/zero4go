@@ -5,7 +5,7 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 type BatchKafkaConsumer struct {

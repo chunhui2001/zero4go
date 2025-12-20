@@ -4,7 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 type Number interface {
@@ -118,30 +118,28 @@ end
 return vals
 `
 
-	for {
-		res, err := RedisClient.Eval(context.Background(), _lua, []string{q.Key}, count).Result()
+	res, err := RedisClient.Eval(context.Background(), _lua, []string{q.Key}, count).Result()
 
-		if err != nil {
-			Log.Errorf("Pop Failed: Key=%s, Error=%+v", q.Key, err)
+	if err != nil {
+		Log.Errorf("Pop Failed: Key=%s, Error=%+v", q.Key, err)
 
-			return make([]T, 0)
-		}
-
-		vals := res.([]interface{})
-
-		if len(vals) == 0 {
-
-			return make([]T, 0)
-		}
-
-		out := make([]T, len(vals))
-
-		for i, v := range vals {
-			out[i] = fromString[T](v.(string))
-		}
-
-		return out
+		return make([]T, 0)
 	}
+
+	vals := res.([]interface{})
+
+	if len(vals) == 0 {
+
+		return make([]T, 0)
+	}
+
+	out := make([]T, len(vals))
+
+	for i, v := range vals {
+		out[i] = fromString[T](v.(string))
+	}
+
+	return out
 }
 
 func toString[T Number](v T) string {

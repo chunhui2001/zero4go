@@ -5,7 +5,7 @@ import (
 
 	"github.com/IBM/sarama"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 type KafkaConf struct {
@@ -50,6 +50,13 @@ func Init() {
 	config.Producer.Partitioner = sarama.NewHashPartitioner // 默认分区策略
 
 	producerSync, err := sarama.NewSyncProducer(brokers, config)
+
+	if err != nil {
+		Log.Errorf("Kafka-Initialized-Failed: bootstrap_servers=%s, Error=%v", Settings.BootstrapServers, err.Error())
+
+		return
+	}
+
 	producerAsync, err := sarama.NewAsyncProducer(brokers, config) // 异步生产者
 
 	if err != nil {

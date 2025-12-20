@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 	"github.com/gin-gonic/gin"
 )
 
@@ -106,11 +106,11 @@ var DefaultTransport http.RoundTripper = &http.Transport{
 // r.Any("/a/scan-api/*proxyPath", func(c *gin.Context) { Proxy("/scan-api", "http://localhost:4002,http://localhost:4004", c) })
 // r.Any("/b/scan-api/*proxyPath", func(c *gin.Context) { Proxy("/scan-api", "http://localhost:4002,http://localhost:4004", c) })
 func Proxy(c *gin.Context, prefix string, remotes ...string) {
-	rand.Seed(time.Now().UnixNano())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	upstreams := remotes
 	upstreamSize := len(upstreams)
-	currentRemote := upstreams[rand.Intn((upstreamSize-1)-0+1)+0]
+	currentRemote := upstreams[r.Intn((upstreamSize-1)-0+1)+0]
 
 	upstream, err := url.Parse(currentRemote)
 
@@ -125,7 +125,7 @@ func Proxy(c *gin.Context, prefix string, remotes ...string) {
 	proxy.Director = func(req *http.Request) {
 
 		RequestURI := req.URL.Path
-		requestPath := strings.Replace(prefix+c.Param("proxyPath"), "//", "/", -1)
+		requestPath := strings.ReplaceAll(prefix+c.Param("proxyPath"), "//", "/")
 
 		req.Header = c.Request.Header
 		req.Host = upstream.Host

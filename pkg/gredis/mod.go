@@ -10,7 +10,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 var (
@@ -156,11 +156,12 @@ func Ping() {
 
 	var serverInfo = "N/a"
 
-	if Settings.Mode == "sentinel" {
+	switch Settings.Mode {
+	case "sentinel":
 		serverInfo = fmt.Sprintf("Mode=%s, MasterName=%s, ServerAddrs=%s", Settings.Mode, Settings.MasterName, Settings.ServerAddrs())
-	} else if Settings.Mode == "standalone" {
+	case "standalone":
 		serverInfo = fmt.Sprintf("Mode=%s, ServerAddrs=%s, DB=%d", Settings.Mode, Settings.ServerAddrs(), Settings.Db)
-	} else if Settings.Mode == "cluster" {
+	case "cluster":
 		serverInfo = fmt.Sprintf("Mode=%s, ServerAddrs=%s", Settings.Mode, Settings.ServerAddrs())
 	}
 

@@ -11,7 +11,7 @@ import (
 	"github.com/bytedance/gopkg/util/logger"
 	"github.com/go-zookeeper/zk"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 type ZookConf struct {

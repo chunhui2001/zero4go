@@ -16,7 +16,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v9/esutil"
 	"github.com/opensearch-project/opensearch-go/v4"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 	"github.com/chunhui2001/zero4go/pkg/utils"
 )
 
@@ -88,7 +88,7 @@ func (c *EsClient) Ping() {
 	}
 
 	// Info API -> GET /
-	res, err := c.Transport.Perform(req)
+	res, _ := c.Transport.Perform(req)
 
 	var r map[string]interface{}
 
@@ -267,6 +267,10 @@ func (c *EsClient) DoSearch(indexName string, queryJsonString string) ([]map[str
 	}
 
 	req, err := http.NewRequestWithContext(context.Background(), "POST", "/"+indexName+"/_search", strings.NewReader(queryJsonString))
+
+	if err != nil {
+		return nil, 0, err
+	}
 
 	// Info API -> GET /
 	res, err := c.Transport.Perform(req)

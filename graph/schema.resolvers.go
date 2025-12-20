@@ -10,7 +10,7 @@ import (
 	"fmt"
 
 	"github.com/chunhui2001/zero4go/graph/model"
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 // CreateTodo is the resolver for the createTodo field.
@@ -27,7 +27,7 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 func (r *queryResolver) Hello(ctx context.Context) (*string, error) {
 	var data = "Hello World, 你好哦"
 
-	Log.Infof(data)
+	Log.Infof("%s", data)
 
 	return &data, nil
 }

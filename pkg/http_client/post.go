@@ -2,7 +2,6 @@ package http_client
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,7 +9,7 @@ import (
 
 	"moul.io/http2curl"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 func HttpPost(reqUrl string, contentType string, data []byte) ([]byte, error) {
@@ -55,7 +54,7 @@ func HttpPost(reqUrl string, contentType string, data []byte) ([]byte, error) {
 	if resp.StatusCode < 200 || resp.StatusCode > 300 {
 		Log.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
 
-		return nil, errors.New(fmt.Sprintf("HTTP %d: %s", resp.StatusCode, string(body)))
+		return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
 	}
 
 	return body, nil

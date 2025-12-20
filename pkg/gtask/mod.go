@@ -7,7 +7,7 @@ import (
 	"github.com/robfig/cron"
 
 	"github.com/chunhui2001/zero4go/pkg/gredis"
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 var c = cron.New()

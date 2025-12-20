@@ -16,7 +16,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v9/esapi"
 	"github.com/elastic/go-elasticsearch/v9/esutil"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 	"github.com/chunhui2001/zero4go/pkg/utils"
 )
 

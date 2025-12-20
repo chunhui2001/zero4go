@@ -56,6 +56,10 @@ update_deps:
 	@echo "✅ 4. 完成！当前依赖版本："
 	go list -m all
 
+### curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.7.2
+lintt:
+	golangci-lint run --disable errcheck
+
 gqlinit:
 	rm -rf graph
 	rm -rf gqlgen.yml server.go

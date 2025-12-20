@@ -26,26 +26,26 @@ func (c *RequestContext) Fail(err any) {
 }
 
 func (c *RequestContext) Failf(format string, err ...any) {
-	c.JSON(200, gin.H{"code": 400, "msg": fmt.Sprintf(format, err)})
+	c.JSON(200, gin.H{"code": 400, "msg": fmt.Sprintf(format, err...)})
 }
 
 func (c *RequestContext) Failc(code int, format string, err ...any) {
-	c.JSON(200, gin.H{"code": code, "msg": fmt.Sprintf(format, err)})
+	c.JSON(200, gin.H{"code": code, "msg": fmt.Sprintf(format, err...)})
 }
 
 func (c *RequestContext) Text(s any) {
 
-	switch s.(type) {
+	switch s := s.(type) {
 	case float64, float32:
 		c.Data(200, "text/plain; charset=utf-8", []byte(fmt.Sprint(s)))
 	case string:
-		c.Data(200, "text/plain; charset=utf-8", []byte(fmt.Sprintf("%s", s)))
+		c.Data(200, "text/plain; charset=utf-8", []byte(s))
 	case bool:
 		c.Data(200, "text/plain; charset=utf-8", []byte(fmt.Sprintf("%t", s)))
 	case byte:
 		c.Data(200, "text/plain; charset=utf-8", []byte(fmt.Sprintf("%x", s)))
 	case []uint8:
-		c.Data(200, "text/plain; charset=utf-8", s.([]byte))
+		c.Data(200, "text/plain; charset=utf-8", s)
 	default:
 		c.Data(200, "text/plain; charset=utf-8", []byte(fmt.Sprintf("%d", s)))
 	}

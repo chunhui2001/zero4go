@@ -3,7 +3,7 @@ package main
 import (
 	"google.golang.org/grpc"
 
-	. "github.com/chunhui2001/zero4go/pkg/server"
+	. "github.com/chunhui2001/zero4go/pkg/server" //nolint:staticcheck
 )
 
 func main() {

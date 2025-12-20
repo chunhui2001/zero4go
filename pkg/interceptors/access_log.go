@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 var DefaultLogFormatter = func(param gin.LogFormatterParams) string {

@@ -8,9 +8,9 @@ type AccessInterceptorWrapper struct {
 
 func (w *AccessInterceptorWrapper) Process(c *gin.Context) {
 
-	if w.requiredAuth {
-
-	}
+	//if w.requiredAuth {
+	//	//
+	//}
 
 	c.Next()
 }

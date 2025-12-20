@@ -28,8 +28,8 @@ import (
 
 	_ "github.com/chunhui2001/zero4go/pkg/boot"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
-	. "github.com/chunhui2001/zero4go/pkg/single"
+	. "github.com/chunhui2001/zero4go/pkg/logs"   //nolint:staticcheck
+	. "github.com/chunhui2001/zero4go/pkg/single" //nolint:staticcheck
 
 	"github.com/chunhui2001/zero4go/graph"
 	"github.com/chunhui2001/zero4go/pkg/graphql"

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 type HttpConf struct {

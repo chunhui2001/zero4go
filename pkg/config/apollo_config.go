@@ -54,9 +54,10 @@ func readNamespace(v *viper.Viper, apolloServer string, apolloName string, apoll
 
 		if _map, _ := utils.ToMap(readResponse(res)); _map != nil {
 
-			if ext == "properties" {
+			switch ext {
+			case "properties":
 				readProperties(v, _map)
-			} else if ext == "yaml" {
+			case "yaml":
 				readYaml(v, _map)
 			}
 		} else {
@@ -91,7 +92,7 @@ func readResponse(res *http.Response) []byte {
 		}
 
 		privKey := sk.(*rsa.PrivateKey)
-		partLen := privKey.PublicKey.N.BitLen() / 8
+		partLen := privKey.N.BitLen() / 8
 
 		chunks := split(data, partLen)
 

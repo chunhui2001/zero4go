@@ -5,7 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 var shutdownSignals chan os.Signal

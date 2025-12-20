@@ -1,7 +1,6 @@
 package http_client
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,7 +8,7 @@ import (
 
 	"moul.io/http2curl"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 func HttpGet(reqUrl string) ([]byte, error) {
@@ -52,7 +51,7 @@ func HttpGet(reqUrl string) ([]byte, error) {
 	if resp.StatusCode < 200 || resp.StatusCode > 300 {
 		Log.Infof("HTTP %d: %s", resp.StatusCode, string(body))
 
-		return nil, errors.New(fmt.Sprintf("HTTP %d: %s", resp.StatusCode, string(body)))
+		return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
 	}
 
 	return body, nil

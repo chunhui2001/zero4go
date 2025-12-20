@@ -17,7 +17,7 @@ import (
 )
 
 func Info() {
-	log.Printf(build_info.INFO.Info())
+	log.Println(build_info.INFO.Info())
 
 	log.Printf("--------------------- CPU INFO ---------------------")
 	log.Printf("Hostname: %s", utils.Hostname())

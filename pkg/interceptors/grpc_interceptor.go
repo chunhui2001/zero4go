@@ -8,10 +8,10 @@ import (
 
 	"google.golang.org/grpc"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
-// Unary interceptor
+// UnaryLoggingInterceptor Unary interceptor
 func UnaryLoggingInterceptor(
 	ctx context.Context,
 	req interface{},

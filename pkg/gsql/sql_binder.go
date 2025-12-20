@@ -8,7 +8,7 @@ import (
 	"sync"
 	"text/template"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 	"github.com/chunhui2001/zero4go/pkg/utils"
 )
 

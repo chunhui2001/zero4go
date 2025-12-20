@@ -6,7 +6,7 @@ import (
 
 	"github.com/bsm/redislock"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 //// 分布式任务示例

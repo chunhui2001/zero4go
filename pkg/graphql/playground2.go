@@ -239,20 +239,20 @@ func endpointHasScheme(endpoint string) bool {
 	return err == nil && u.Scheme != ""
 }
 
-// getSubscriptionEndpoint returns the subscription endpoint for the given
-// endpoint if it is parsable as a URL, or an empty string.
-func getSubscriptionEndpoint(endpoint string) string {
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return ""
-	}
-
-	switch u.Scheme {
-	case "https":
-		u.Scheme = "wss"
-	default:
-		u.Scheme = "ws"
-	}
-
-	return u.String()
-}
+//// getSubscriptionEndpoint returns the subscription endpoint for the given
+//// endpoint if it is parsable as a URL, or an empty string.
+//func getSubscriptionEndpoint(endpoint string) string {
+//	u, err := url.Parse(endpoint)
+//	if err != nil {
+//		return ""
+//	}
+//
+//	switch u.Scheme {
+//	case "https":
+//		u.Scheme = "wss"
+//	default:
+//		u.Scheme = "ws"
+//	}
+//
+//	return u.String()
+//}

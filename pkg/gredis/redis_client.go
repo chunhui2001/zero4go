@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 	"github.com/redis/go-redis/v9"
 )
 

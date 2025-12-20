@@ -86,7 +86,9 @@ func ViperConfig() *viper.Viper {
 			var yamlBytes = utils.ReadFile(currFile)
 			var _map map[string]any
 
-			yaml.Unmarshal(yamlBytes, &_map)
+			if err := yaml.Unmarshal(yamlBytes, &_map); err != nil {
+				panic(err)
+			}
 
 			for key, val := range _map {
 				v.SetDefault(strings.TrimSpace(key), val)

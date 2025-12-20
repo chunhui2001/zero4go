@@ -7,7 +7,7 @@ import (
 
 	"github.com/IBM/sarama"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 // 🎯 Bonus：消费者读取 Key 和 Value（封装函数）

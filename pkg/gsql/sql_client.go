@@ -8,7 +8,7 @@ import (
 	"text/template"
 	"time"
 
-	. "github.com/chunhui2001/zero4go/pkg/logs"
+	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
 )
 
 type MySQLClient struct {
@@ -30,6 +30,10 @@ func (s *MySQLClient) Insert(tplName string, params map[string]any) (int64, erro
 	defer cancelFunc()
 
 	sqlStr, binds, err := RenderSQL(s.render, tplName, params)
+
+	if err != nil {
+		return 0, err
+	}
 
 	// prepare the statement
 	stmt, err := s.Prepare(sqlStr)
@@ -61,6 +65,10 @@ func (s *MySQLClient) Update(tplName string, params map[string]any) (int64, erro
 
 	sqlStr, binds, err := RenderSQL(s.render, tplName, params)
 
+	if err != nil {
+		return 0, err
+	}
+
 	// prepare the statement
 	stmt, err := s.Prepare(sqlStr)
 
@@ -90,6 +98,10 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 	defer cancelFunc()
 
 	sqlStr, binds, err := RenderSQL(s.render, tplName, params)
+
+	if err != nil {
+		return 0, err
+	}
 
 	// prepare the statement
 	stmt, err := s.Prepare(sqlStr)
