@@ -15,10 +15,20 @@ networkConfig1:
     field4: true
     field5: "false"
 
-networkConfig2:
-  field1: 1
-  field2: 3
-  field3: "ff"
-  field4: true
-  field5: "false"
-  fieldName: "阿拉大方拉风 asf"
+Access-Clients:
+  app1:
+    clientName: app1
+    accessKeyID: 23e3
+    secretAccessKey: awef
+    enabled: true
+    scope:
+      - /index
+      - /about
+  app2:
+    clientName: app2
+    accessKeyID: 23e3
+    secretAccessKey: awef
+    enabled: true
+    scope:
+      - /index
+      - /about
