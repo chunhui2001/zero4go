@@ -12,7 +12,7 @@ COMMITER 	?=$(shell git log -1 --pretty=format:'%ae')
 PWD 		?=$(shell pwd)
 TIME 		?=$(shell date +%s)
 
-APOLLO_CONFIG ?=http://127.0.0.1:8080
+APOLLO_SERVER ?=http://127.0.0.1:8080
 
 CGO_ENABLED ?=0
 GOPROXY 	?=go env -w GO111MODULE=on && go env -w GOPROXY=https://goproxy.cn,direct
@@ -77,7 +77,8 @@ get:
 # make run e=development 
 run:
 	rm -rf gin-bin >/dev/null 2>&1
-	TZ=$(zone) GIN_ENV=$(e) APOLLO_CONFIG=$(APOLLO_CONFIG) APP_NAME=$(APP_NAME) WORK_DIR=$(PWD) go run -trimpath .
+	@#TZ=$(zone) GIN_ENV=$(e) APOLLO_SERVER=$(APOLLO_SERVER) APP_NAME=$(APP_NAME) WORK_DIR=$(PWD) go run -trimpath .
+	TZ=$(zone) WORK_DIR=$(PWD) go run -trimpath . --env=$(e) --config=config --apollo-server=$(APOLLO_SERVER) --apollo-name=$(APP_NAME) --apollo-profile=$(e) --apollo-namespace=application.properties,application.yaml
 
 ### 启动调试程序, 当代码变化时自动重启
 # make dev
@@ -108,7 +109,7 @@ up: rm
 	docker logs -f $(APP_NAME)
 
 serve:
-	TZ=$(zone) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-amd64 -e $(e)
+	TZ=$(zone) WORK_DIR=$(PWD) ./dist/$(APP_NAME)-darwin-amd64 --env=$(e) --config=config --apollo-server=$(APOLLO_SERVER) --apollo-name=$(APP_NAME) --apollo-profile=$(e) --apollo-namespace=application.properties,application.yaml
 
 ### 1 = stdout = normal output of a command
 ### 2 = stderr = error output of a command

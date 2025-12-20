@@ -26,7 +26,7 @@ import (
 	"github.com/chunhui2001/zero4go/pkg/interceptors"
 	"github.com/chunhui2001/zero4go/pkg/utils"
 
-	_ "github.com/chunhui2001/zero4go/pkg/bootstrap"
+	_ "github.com/chunhui2001/zero4go/pkg/boot"
 
 	. "github.com/chunhui2001/zero4go/pkg/logs"
 	. "github.com/chunhui2001/zero4go/pkg/single"

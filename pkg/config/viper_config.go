@@ -33,7 +33,7 @@ func ViperConfig() *viper.Viper {
 		err := v.ReadInConfig()
 
 		if err != nil {
-			log.Printf("Viper Configuration load error: ConfigPath=%s, file=%s, Error=%v", configRoot, file, err)
+			// log.Printf("Viper Configuration load error: ConfigPath=%s, file=%s, Error=%v", configRoot, file, err)
 
 			return nil
 		}
@@ -49,7 +49,7 @@ func ViperConfig() *viper.Viper {
 		}
 	}
 
-	var filenames2 = configFilesAppliction()
+	var filenames2 = configFilesApplication()
 
 	ff := func(str string) (key, value string, ok bool) {
 		idx := strings.Index(str, "=")

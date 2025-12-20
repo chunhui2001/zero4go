@@ -39,13 +39,9 @@ var AppSetting = &AppConf{
 	RpcPort:  "0.0.0.0:50051",
 }
 
-var ConfigurationFolder = "config"
-var EnvName = os.Getenv("GIN_ENV")
-
 var viperConfig *viper.Viper
-var envDefault = ".env"
 
-func OnLoad() {
+func init() {
 	// 读取配置
 	if v1 := readConfig(); v1 != nil {
 		viperConfig = v1

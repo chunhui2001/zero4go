@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/chunhui2001/zero4go/pkg/cli"
 	"github.com/chunhui2001/zero4go/pkg/utils"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -24,43 +25,32 @@ import (
 )
 
 func ReadApolloConfig(v *viper.Viper) {
-	var apolloEnv = EnvName
-	var apolloName = os.Getenv("APP_NAME")
-	var apolloConfig = os.Getenv("APOLLO_CONFIG")
-	var apolloSpace = os.Getenv("APOLLO_NAMESPACE")
-
-	if len(apolloConfig) == 0 {
+	if len(cli.Cli.ApolloServer) == 0 {
 		return
 	}
 
-	if len(apolloSpace) == 0 {
-		apolloSpace = "application.properties,application.yaml"
-	}
-
-	log.Printf("Apollo config env: %s, %s, %s", apolloConfig, apolloName, apolloEnv)
-
-	if len(apolloConfig) > 0 && len(apolloName) > 0 && len(apolloEnv) > 0 {
-		for _, namespace := range strings.Split(apolloSpace, ",") {
+	if len(cli.Cli.ApolloServer) > 0 && len(cli.Cli.ApolloName) > 0 && len(cli.Cli.ApolloProfile) > 0 {
+		for _, namespace := range strings.Split(cli.Cli.ApolloNamespace, ",") {
 			var array = strings.Split(namespace, ".")
 
 			if len(array) == 2 {
-				readNamespace(v, apolloConfig, apolloName, apolloEnv, namespace, array[1])
+				readNamespace(v, cli.Cli.ApolloServer, cli.Cli.ApolloName, cli.Cli.ApolloProfile, namespace, array[1])
 			} else {
-				readNamespace(v, apolloConfig, apolloName, apolloEnv, namespace, "properties")
-				readNamespace(v, apolloConfig, apolloName, apolloEnv, namespace, "yaml")
+				readNamespace(v, cli.Cli.ApolloServer, cli.Cli.ApolloName, cli.Cli.ApolloProfile, namespace, "properties")
+				readNamespace(v, cli.Cli.ApolloServer, cli.Cli.ApolloName, cli.Cli.ApolloProfile, namespace, "yaml")
 			}
 		}
 	}
 }
 
-func readNamespace(v *viper.Viper, apolloConfig string, apolloName string, apolloEnv string, namespace string, ext string) {
-	var s1 = fmt.Sprintf("%s/configs/%s/%s/%s", apolloConfig, apolloName, apolloEnv, namespace)
+func readNamespace(v *viper.Viper, apolloServer string, apolloName string, apolloProfile string, namespace string, ext string) {
+	var s1 = fmt.Sprintf("%s/configs/%s/%s/%s", apolloServer, apolloName, apolloProfile, namespace)
 
 	if res, err := http_client.SendRequest(s1); err != nil {
 
 		log.Printf("Apollo Configuration Failed: Url=%s, Namespace=%s, Error=%s", s1, namespace, err.Error())
 	} else {
-		log.Printf("Apollo Loading Succeed: Url=%s", s1)
+		log.Printf("Apollo Configuration Loaded: Server=%s, ApolloName=%s, ApolloProfile=%s", apolloServer, apolloName, apolloProfile)
 
 		if _map, _ := utils.ToMap(readResponse(res)); _map != nil {
 

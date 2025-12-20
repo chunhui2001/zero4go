@@ -2,6 +2,7 @@ package build_info
 
 import (
 	"fmt"
+	"log"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -23,7 +24,10 @@ var INFO = &BuildInfo{
 }
 
 func (b *BuildInfo) Info() string {
-	return fmt.Sprintf("%s version devel +%s %s [%s]", b.Name, b.Commit, b.OS, b.Time)
+	var s = fmt.Sprintf("%s version devel +%s %s [%s]", b.Name, b.Commit, b.OS, b.Time)
+	log.Println(s)
+	
+	return s
 }
 
 var (
