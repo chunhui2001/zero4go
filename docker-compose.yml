@@ -27,6 +27,7 @@ services:
       - ./META-INF:/app/zero4go/META-INF:ro
       - ./config:/app/zero4go/config:ro
       - ./static:/app/zero4go/static:ro
+      - ./views:/app/zero4go/views:ro
       - ./dist/zero4go-linux-amd64:/app/zero4go/zero4go-linux-amd64:ro
     restart: always
     networks:

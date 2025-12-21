@@ -1,8 +1,9 @@
 package gkafkav2
 
 type Msg struct {
-	Key       string
-	Value     string
+	Key       []byte
+	Headers   map[string][]byte
+	Value     []byte
 	Partition int32
 	Offset    int64
 }

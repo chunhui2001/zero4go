@@ -37,7 +37,7 @@ func (s *MySQLClient) Insert(tplName string, params map[string]any) (int64, erro
 	stmt, err := s.Prepare(sqlStr)
 
 	if err != nil {
-		Log.Errorf("MySQL-Insert-Error: sqlStr=%s, Error=%s", sqlStr, err.Error())
+		Log.Errorf("MySQL-Insert-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -48,7 +48,7 @@ func (s *MySQLClient) Insert(tplName string, params map[string]any) (int64, erro
 	result, err := stmt.ExecContext(ctx, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-Insert-Error: Error=%s", err.Error())
+		Log.Errorf("MySQL-Insert-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -71,7 +71,7 @@ func (s *MySQLClient) Update(tplName string, params map[string]any) (int64, erro
 	stmt, err := s.Prepare(sqlStr)
 
 	if err != nil {
-		Log.Errorf("MySQL-Update-Error: sqlStr=%s, Error=%s", sqlStr, err.Error())
+		Log.Errorf("MySQL-Update-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -82,7 +82,7 @@ func (s *MySQLClient) Update(tplName string, params map[string]any) (int64, erro
 	result, err := stmt.ExecContext(ctx, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-Update-Error: Error=%s", err.Error())
+		Log.Errorf("MySQL-Update-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -105,7 +105,7 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 	stmt, err := s.Prepare(sqlStr)
 
 	if err != nil {
-		Log.Errorf("MySQL-Delete-Error: sqlStr=%s, Error=%s", sqlStr, err.Error())
+		Log.Errorf("MySQL-Delete-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -116,7 +116,7 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 	result, err := stmt.ExecContext(ctx, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-Delete-Error: Error=%s", err.Error())
+		Log.Errorf("MySQL-Delete-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -136,7 +136,7 @@ func SelectRow[T any](tplName string, params map[string]any) (*T, error) {
 	rows, err := Client.Query(sqlStr, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRow-Error: sqlStr=%s, Error=%s", sqlStr, err.Error())
+		Log.Errorf("MySQL-SelectRow-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func SelectRow[T any](tplName string, params map[string]any) (*T, error) {
 	cols, err := rows.Columns()
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRow-Error: Error=%s", err.Error())
+		Log.Errorf("MySQL-SelectRow-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func SelectRows[T any](tplName string, params map[string]any) ([]T, error) {
 	rows, err := Client.Query(sqlStr, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRows-Error: sqlStr=%s, Error=%s", sqlStr, err.Error())
+		Log.Errorf("MySQL-SelectRows-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func SelectRows[T any](tplName string, params map[string]any) ([]T, error) {
 	cols, err := rows.Columns()
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRows-Error: Error=%s", err.Error())
+		Log.Errorf("MySQL-SelectRows-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
 
 		return nil, err
 	}

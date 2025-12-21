@@ -76,6 +76,20 @@ func NewConsumer(broker string, groupId string, topic string, offset string) *Ba
 }
 
 func (c *BatchKafkaConsumer) Start(cb func(topic string, groupId string, msgs []*Msg) error) {
+	var readHeaders = func(msg *kafka.Message) map[string][]byte {
+		if msg == nil {
+			return nil
+		}
+		
+		headers := make(map[string][]byte)
+
+		for _, h := range msg.Headers {
+			headers[h.Key] = h.Value
+		}
+
+		return headers
+	}
+
 	go func() {
 		for {
 			ev := c.Poll(100)
@@ -91,8 +105,9 @@ func (c *BatchKafkaConsumer) Start(cb func(topic string, groupId string, msgs []
 				// c.CommitMessage(e) // 异步 FlushCommit
 
 				c.msgCh <- &Msg{
-					Key:       string(e.Key),
-					Value:     string(e.Value),
+					Key:       e.Key,
+					Headers:   readHeaders(e),
+					Value:     e.Value,
 					Partition: e.TopicPartition.Partition,
 					Offset:    int64(e.TopicPartition.Offset),
 				}

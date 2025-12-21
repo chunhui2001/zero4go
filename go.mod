@@ -5,12 +5,14 @@ go 1.25.5
 require (
 	github.com/99designs/gqlgen v0.17.85
 	github.com/IBM/sarama v1.46.3
+	github.com/JGLTechnologies/gin-rate-limit v1.5.6
 	github.com/alecthomas/kong v1.13.0
 	github.com/bsm/redislock v0.9.4
 	github.com/bytedance/gopkg v0.1.3
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/confluentinc/confluent-kafka-go/v2 v2.12.0
 	github.com/elastic/go-elasticsearch/v9 v9.2.1
+	github.com/foolin/goview v0.3.0
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/static v1.1.5
@@ -40,7 +42,6 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/JGLTechnologies/gin-rate-limit v1.5.6 // indirect
 	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/bytedance/sonic v1.14.2 // indirect
 	github.com/bytedance/sonic/loader v0.4.0 // indirect
@@ -52,7 +53,6 @@ require (
 	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.8.0 // indirect
-	github.com/foolin/goview v0.3.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -60,7 +60,7 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.29.0 // indirect
+	github.com/go-playground/validator/v10 v10.30.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.1 // indirect
@@ -111,5 +111,5 @@ require (
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251213004720-97cd9d5aeac2 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
 )

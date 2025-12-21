@@ -21,7 +21,7 @@ $ GOPROXY=direct go get -x github.com/chunhui2001/zero4go@v1.0.0
 > ❌ 反过来一次，这个版本号就“污染”了
 
 # 清理 mod cache
-$ go clean -modcache 
+$ go clean -modcache
 
 # go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 # go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
@@ -62,3 +62,25 @@ $ go get && go run .
 
 # git 修改最后一次提交的 message
 $ git commit --amend -m "upgrade redis to v9"
+
+# 真正适合 Go SSR 组件库
+https://templ.guide/
+> 它是什么？
+  编译期组件
+  真正的 props
+  真正的 children
+  真正的组合能力
+  输出 纯 HTML
+  100% 服务端渲染
+
+
+# templ 全语言对照表（直接帮你选）
+| 语言   | templ 对等选择 | 推荐指数  |
+| ---- | ---------- | ----- |
+| Go   | templ      | ⭐⭐⭐⭐⭐ |
+| Rust | Leptos     | ⭐⭐⭐⭐⭐ |
+| Rust | Askama     | ⭐⭐⭐⭐  |
+| Java | JTE        | ⭐⭐⭐⭐  |
+| Java | Thymeleaf  | ⭐⭐⭐   |
+| Node | Astro      | ⭐⭐⭐⭐⭐ |
+| Node | React SSR  | ⭐⭐⭐⭐  |
