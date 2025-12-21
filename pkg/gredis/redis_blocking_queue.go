@@ -90,8 +90,6 @@ return {#values, curMax, last}
 
 	var realCount, _ = RedisClient.LLen(context.Background(), q.Key).Result()
 
-	Log.Infof("%+v", res)
-
 	vals := res.([]interface{})
 	pushCount := vals[0].(int64)
 	q.MaxVal = vals[1].(int64)

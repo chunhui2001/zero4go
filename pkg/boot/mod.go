@@ -7,8 +7,8 @@ import (
 	"github.com/chunhui2001/zero4go/pkg/gsql"
 	"github.com/chunhui2001/zero4go/pkg/gzook"
 	"github.com/chunhui2001/zero4go/pkg/http_client"
-	"github.com/chunhui2001/zero4go/pkg/interceptors"
 	"github.com/chunhui2001/zero4go/pkg/logs"
+	"github.com/chunhui2001/zero4go/pkg/middlewares"
 	"github.com/chunhui2001/zero4go/pkg/search_elastic"
 	"github.com/chunhui2001/zero4go/pkg/search_openes"
 )
@@ -25,5 +25,5 @@ func init() {
 	search_openes.Init()
 	gzook.Init()
 
-	interceptors.Init()
+	middlewares.Init()
 }

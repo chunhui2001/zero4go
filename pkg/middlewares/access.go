@@ -1,9 +1,8 @@
-package interceptors
+package middlewares
 
 import (
 	"errors"
 
-	"github.com/chunhui2001/zero4go/pkg/gaws"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,13 +19,13 @@ func (w *AccessWrapper) Process(c *gin.Context) {
 	requestUrl := RequestURL(c.Request)
 	var accessQuery = requestUrl.Query()
 
-	if !accessQuery.Has(gaws.AWSAccessKeyIdFieldKey) {
+	if !accessQuery.Has(AWSAccessKeyIdFieldKey) {
 		AbortAccess(errors.New("ACCESS_KEY_REQUIRED"), c)
 		c.Next()
 		return
 	}
 
-	accessKeyId := accessQuery.Get(gaws.AWSAccessKeyIdFieldKey)
+	accessKeyId := accessQuery.Get(AWSAccessKeyIdFieldKey)
 
 	var accessClient = accessClientsMap[accessKeyId]
 
@@ -44,7 +43,7 @@ func (w *AccessWrapper) Process(c *gin.Context) {
 		return
 	}
 
-	if _, err := gaws.CheckSign(accessKeyId, accessClient.SecretAccessKey, c.Request.Method, requestUrl); err != nil {
+	if _, err := CheckSign(accessKeyId, accessClient.SecretAccessKey, c.Request.Method, requestUrl); err != nil {
 		AbortAccess(err, c)
 		c.Next()
 

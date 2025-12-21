@@ -1,4 +1,4 @@
-package gaws
+package middlewares
 
 import (
 	"crypto/hmac"

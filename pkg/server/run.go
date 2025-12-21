@@ -23,7 +23,7 @@ import (
 
 	"github.com/chunhui2001/zero4go/pkg/config"
 	"github.com/chunhui2001/zero4go/pkg/favicon"
-	"github.com/chunhui2001/zero4go/pkg/interceptors"
+	"github.com/chunhui2001/zero4go/pkg/middlewares"
 	"github.com/chunhui2001/zero4go/pkg/utils"
 
 	_ "github.com/chunhui2001/zero4go/pkg/boot"
@@ -77,7 +77,7 @@ func Setup(f func(*Application)) *Application {
 	r.Use(static.Serve("/RichMedias", static.LocalFile(filepath.Join(utils.RootDir(), "./static"), false)))
 	r.Use(favicon.Favicon())
 
-	r.Use(interceptors.AccessLog("/favicon.ico", "/static"))
+	r.Use(middlewares.AccessLog("/favicon.ico", "/static"))
 
 	if config.AppSetting.GraphQLEnable {
 		r.POST(config.AppSetting.GraphQLServerURI, graphqlHandler())
@@ -106,8 +106,8 @@ func Setup(f func(*Application)) *Application {
 func (a *Application) Run(f func(*grpc.Server)) {
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(interceptors.UnaryLoggingInterceptor),
-		grpc.StreamInterceptor(interceptors.StreamLoggingInterceptor),
+		grpc.UnaryInterceptor(middlewares.UnaryLoggingInterceptor),
+		grpc.StreamInterceptor(middlewares.StreamLoggingInterceptor),
 	)
 
 	pb.RegisterGreeterServer(grpcServer, &rpc.GreeterServer{})

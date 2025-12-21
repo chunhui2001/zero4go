@@ -1,4 +1,4 @@
-package interceptors
+package middlewares
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/chunhui2001/zero4go/pkg/config"
-	"github.com/chunhui2001/zero4go/pkg/logs"
 	"github.com/chunhui2001/zero4go/pkg/utils"
 )
 
@@ -29,8 +28,6 @@ func Init() {
 				accessClientsMap[key] = &vv
 			}
 		}
-
-		logs.Log.Infof("Init accessClients success: json=%s", utils.ToJsonString(accessClientsMap))
 	}
 }
 
