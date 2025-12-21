@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"html/template"
 	"net"
 	"net/http"
 	"os"
@@ -13,6 +14,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/foolin/goview"
+	"github.com/foolin/goview/supports/ginview"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
@@ -21,6 +24,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	ratelimit "github.com/JGLTechnologies/gin-rate-limit"
 	"github.com/chunhui2001/zero4go/pkg/config"
 	"github.com/chunhui2001/zero4go/pkg/favicon"
 	"github.com/chunhui2001/zero4go/pkg/middlewares"
@@ -66,12 +70,42 @@ func playgroundHandler(endpoint string) gin.HandlerFunc {
 	}
 }
 
+func errorHandler(c *gin.Context, info ratelimit.Info) {
+	c.String(429, "Too many requests. Try again in "+time.Until(info.ResetTime).String())
+}
+
 func Setup(f func(*Application)) *Application {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := &Application{Engine: gin.New()}
 
+	r.HTMLRender = ginview.New(goview.Config{
+		Root:      filepath.Join(utils.RootDir(), _SiteConf.Root),
+		Extension: _SiteConf.Extension,
+		Master:    _SiteConf.Master,
+		Partials:  []string{"partials/ad"},
+		Funcs: template.FuncMap{
+			"timeString": func(b uint32) string {
+				return time.Unix(int64(b), 0).Format("2006-01-02T15:04:05Z07:00")
+			},
+		},
+		DisableCache: true,
+	})
+
+	rateLimitMiddleWare := ratelimit.RateLimiter(
+		ratelimit.InMemoryStore(&ratelimit.InMemoryOptions{
+			Rate:  time.Second,
+			Limit: 10,
+		}),
+		&ratelimit.Options{
+			ErrorHandler: errorHandler,
+			KeyFunc: func(c *gin.Context) string {
+				return c.ClientIP()
+			},
+		})
+
 	r.Use(gin.Recovery())
+	r.Use(rateLimitMiddleWare)
 
 	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedExtensions([]string{".pdf", ".mp4", ".ico"})))
 	r.Use(static.Serve("/RichMedias", static.LocalFile(filepath.Join(utils.RootDir(), "./static"), false)))
@@ -88,6 +122,8 @@ func Setup(f func(*Application)) *Application {
 	r.GET("/info", func(c *RequestContext) {
 		c.Text("Yeah, your server is running.")
 	})
+
+	r.Upstream("/index2", "/index", "http://127.0.0.1:8080")
 
 	// customer http router
 	f(r)

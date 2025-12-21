@@ -135,12 +135,11 @@ func Proxy(c *gin.Context, prefix string, remotes ...string) {
 
 		// c.Request.WithContext(context.WithValue(c.Request.Context(), "ProxyReverse", utils.MapOf("Upstream", currentRemote, "RequestPath", requestPath)))
 
-		Log.Infof(`Access-by-Proxy: URI=%s, Upstream=%s, ProxyPath=%s`, RequestURI, currentRemote, requestPath)
+		Log.Infof(`Upstream: URI=%s, Upstream=%s, ProxyPath=%s`, RequestURI, currentRemote, requestPath)
 		// c.AbortWithStatus(201)
 	}
 
 	proxy.ServeHTTP(c.Writer, c.Request)
-
 }
 
 // Any
@@ -150,5 +149,5 @@ func Any(r *gin.Engine, from string, to string, remotes ...string) {
 		Proxy(c, to, remotes...)
 	})
 
-	Log.Infof(`Proxy-Reverse-Handler: Method=%s, From=%s, To=%s, remotes=%s`, "Any", from, to, strings.Join(remotes, ","))
+	Log.Infof(`Upstream: Method=%s, From=%s, To=%s, remotes=%s`, "Any", from, to, strings.Join(remotes, ","))
 }

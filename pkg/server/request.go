@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/chunhui2001/zero4go/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -49,6 +50,12 @@ func (c *RequestContext) Text(s any) {
 	default:
 		c.Data(200, "text/plain; charset=utf-8", []byte(fmt.Sprintf("%d", s)))
 	}
+}
+
+func (c *RequestContext) Render(code int, name string, data map[string]any) {
+	data["now"] = utils.NowTimestamp()
+
+	c.HTML(code, name, data)
 }
 
 func Wrap(handlers ...interface{}) []gin.HandlerFunc {

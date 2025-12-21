@@ -40,18 +40,17 @@ func Print(conf gin.LoggerConfig) gin.HandlerFunc {
 
 	notlogged := conf.SkipPaths
 
-	var skip map[string]struct{}
+	var skip map[string]bool
 
 	if length := len(notlogged); length > 0 {
-		skip = make(map[string]struct{}, length)
+		skip = make(map[string]bool, length)
 
 		for _, path := range notlogged {
-			skip[path] = struct{}{}
+			skip[path] = true
 		}
 	}
 
 	return func(c *gin.Context) {
-
 		// Start timer
 		start := time.Now()
 		path := c.Request.URL.Path

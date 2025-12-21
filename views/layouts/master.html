@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{template "head" .}}
+</head>
+
+<body>
+<div class="main-container">
+    {{template "content" .}}
+</div>
+
+{{include "layouts/footer"}}
+
+<script type="text/javascript" src="/static/prototype-1.7.3.js"></script>
+<script type="text/javascript" src="/static/jquery-3.5.1.min.js"></script>
+
+{{template "scripts" .}}
+</body>
+</html>
