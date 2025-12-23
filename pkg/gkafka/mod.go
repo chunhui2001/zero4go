@@ -30,9 +30,8 @@ func readKey(key sarama.Encoder) string {
 var KafkaProducer *KafkaClient
 
 func Init() {
-
 	if !Settings.Enable {
-		Log.Infof("Kafka-Initialized-Disabled: val=%t", Settings.Enable)
+		Log.Infof("Kafka-Disabled: val=%t", Settings.Enable)
 		return
 	}
 
@@ -52,7 +51,7 @@ func Init() {
 	producerSync, err := sarama.NewSyncProducer(brokers, config)
 
 	if err != nil {
-		Log.Errorf("Kafka-Initialized-Failed: bootstrap_servers=%s, Error=%v", Settings.BootstrapServers, err.Error())
+		Log.Errorf("Kafka-Failed: bootstrap_servers=%s, Error=%v", Settings.BootstrapServers, err.Error())
 
 		return
 	}
@@ -60,7 +59,7 @@ func Init() {
 	producerAsync, err := sarama.NewAsyncProducer(brokers, config) // 异步生产者
 
 	if err != nil {
-		Log.Errorf("Kafka-Initialized-Failed: bootstrap_servers=%s, Error=%v", Settings.BootstrapServers, err.Error())
+		Log.Errorf("Kafka-Failed: bootstrap_servers=%s, Error=%v", Settings.BootstrapServers, err.Error())
 
 		return
 	}
@@ -82,5 +81,5 @@ func Init() {
 		ProducerAsync: producerAsync,
 	}
 
-	Log.Infof("Kafka-Initialized-Succeed: bootstrap_servers=%s", Settings.BootstrapServers)
+	Log.Infof("Kafka-Succeed: bootstrap_servers=%s", Settings.BootstrapServers)
 }

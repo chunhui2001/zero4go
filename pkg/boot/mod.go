@@ -21,6 +21,7 @@ func init() {
 	gkafka.Init()
 	gredis.Init()
 	gsql.Init()
+
 	search_elastic.Init()
 	search_openes.Init()
 	gzook.Init()

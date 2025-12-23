@@ -1,18 +1,48 @@
 package gsql
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"text/template"
 	"time"
 
 	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
+	"github.com/chunhui2001/zero4go/pkg/utils"
 )
 
 type MySQLClient struct {
 	*sql.DB
 	//render *pongo2.TemplateSet
 	render *template.Template
+	conf   *MySQLConf
+}
+
+// RenderSQL 1️⃣ 渲染 SQL + 获取绑定值
+func (s *MySQLClient) RenderSQL(tplName string, params map[string]interface{}) (string, []any, error) {
+	bindCtx := NewSqlBindContext()
+
+	params["CTX"] = bindCtx
+
+	var buf bytes.Buffer
+	err := s.render.ExecuteTemplate(&buf, tplName, params)
+
+	if err != nil {
+		Log.Errorf("RenderSQL: DataSource=%s, tplName=%s, Error=%s", s.conf.Name, tplName, err.Error())
+
+		return "", nil, err
+	}
+
+	// 取出绑定值
+	binds := bindCtx.TakeBinds()
+
+	var out = buf.String()
+
+	var sqlStatement = trimEndSymbol(utils.NormalizeSpace(DebugSQLWithBinds(out, binds)))
+
+	Log.Debugf("sqlStatement: DataSource=%s, tplName=%s, sql=%s", s.conf.Name, tplName, sqlStatement)
+
+	return trimEndSymbol(out), binds, nil
 }
 
 func (s *MySQLClient) Version() (string, error) {
@@ -27,7 +57,7 @@ func (s *MySQLClient) Insert(tplName string, params map[string]any) (int64, erro
 
 	defer cancelFunc()
 
-	sqlStr, binds, err := RenderSQL(s.render, tplName, params)
+	sqlStr, binds, err := s.RenderSQL(tplName, params)
 
 	if err != nil {
 		return 0, err
@@ -37,7 +67,7 @@ func (s *MySQLClient) Insert(tplName string, params map[string]any) (int64, erro
 	stmt, err := s.Prepare(sqlStr)
 
 	if err != nil {
-		Log.Errorf("MySQL-Insert-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-Insert-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", s.conf.Name, tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -48,7 +78,7 @@ func (s *MySQLClient) Insert(tplName string, params map[string]any) (int64, erro
 	result, err := stmt.ExecContext(ctx, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-Insert-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-Insert-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", s.conf.Name, tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -61,7 +91,7 @@ func (s *MySQLClient) Update(tplName string, params map[string]any) (int64, erro
 
 	defer cancelFunc()
 
-	sqlStr, binds, err := RenderSQL(s.render, tplName, params)
+	sqlStr, binds, err := s.RenderSQL(tplName, params)
 
 	if err != nil {
 		return 0, err
@@ -71,7 +101,7 @@ func (s *MySQLClient) Update(tplName string, params map[string]any) (int64, erro
 	stmt, err := s.Prepare(sqlStr)
 
 	if err != nil {
-		Log.Errorf("MySQL-Update-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-Update-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", s.conf.Name, tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -82,7 +112,7 @@ func (s *MySQLClient) Update(tplName string, params map[string]any) (int64, erro
 	result, err := stmt.ExecContext(ctx, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-Update-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-Update-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", s.conf.Name, tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -95,7 +125,7 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 
 	defer cancelFunc()
 
-	sqlStr, binds, err := RenderSQL(s.render, tplName, params)
+	sqlStr, binds, err := s.RenderSQL(tplName, params)
 
 	if err != nil {
 		return 0, err
@@ -105,7 +135,7 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 	stmt, err := s.Prepare(sqlStr)
 
 	if err != nil {
-		Log.Errorf("MySQL-Delete-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-Delete-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", s.conf.Name, tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -116,7 +146,7 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 	result, err := stmt.ExecContext(ctx, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-Delete-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-Delete-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", s.conf.Name, tplName, sqlStr, err.Error())
 
 		return -1, err
 	}
@@ -124,19 +154,27 @@ func (s *MySQLClient) Delete(tplName string, params map[string]any) (int64, erro
 	return result.RowsAffected()
 }
 
-func SelectRow[T any](tplName string, params map[string]any) (*T, error) {
+func SelectRow[T any](dbname string, tplName string, params map[string]any) (*T, error) {
+	var _client *MySQLClient
+
+	if DataSouces[dbname] != nil {
+		_client = DataSouces[dbname]
+	} else {
+		_client = &Client
+	}
+
 	// 1️⃣ 渲染 SQL + 获取绑定值
-	sqlStr, binds, err := RenderSQL(Client.render, tplName, params)
+	sqlStr, binds, err := _client.RenderSQL(tplName, params)
 
 	if err != nil {
 		return nil, err
 	}
 
 	// 4️⃣ 获取列名
-	rows, err := Client.Query(sqlStr, binds...)
+	rows, err := _client.Query(sqlStr, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRow-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-SelectRow-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", _client.conf.Name, tplName, sqlStr, err.Error())
 
 		return nil, err
 	}
@@ -150,7 +188,7 @@ func SelectRow[T any](tplName string, params map[string]any) (*T, error) {
 	cols, err := rows.Columns()
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRow-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-SelectRow-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", _client.conf.Name, tplName, sqlStr, err.Error())
 
 		return nil, err
 	}
@@ -171,19 +209,27 @@ func SelectRow[T any](tplName string, params map[string]any) (*T, error) {
 	return &result, nil
 }
 
-func SelectRows[T any](tplName string, params map[string]any) ([]T, error) {
+func SelectRows[T any](dbname string, tplName string, params map[string]any) ([]T, error) {
+	var _client *MySQLClient
+
+	if DataSouces[dbname] != nil {
+		_client = DataSouces[dbname]
+	} else {
+		_client = &Client
+	}
+
 	// 1️⃣ 渲染 SQL + 获取绑定值
-	sqlStr, binds, err := RenderSQL(Client.render, tplName, params)
+	sqlStr, binds, err := _client.RenderSQL(tplName, params)
 
 	if err != nil {
 		return nil, err
 	}
 
 	// 2️⃣ 执行查询
-	rows, err := Client.Query(sqlStr, binds...)
+	rows, err := _client.Query(sqlStr, binds...)
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRows-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-SelectRows-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", _client.conf.Name, tplName, sqlStr, err.Error())
 
 		return nil, err
 	}
@@ -194,7 +240,7 @@ func SelectRows[T any](tplName string, params map[string]any) ([]T, error) {
 	cols, err := rows.Columns()
 
 	if err != nil {
-		Log.Errorf("MySQL-SelectRows-Error: tplName=%s, sqlStr=%s, Error=%s", tplName, sqlStr, err.Error())
+		Log.Errorf("MySQL-SelectRows-Error: DataSource=%s, tplName=%s, sqlStr=%s, Error=%s", _client.conf.Name, tplName, sqlStr, err.Error())
 
 		return nil, err
 	}

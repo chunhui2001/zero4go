@@ -70,6 +70,10 @@ func init() {
 	// TriggerOnChange()
 }
 
+func Viper() *viper.Viper {
+	return viperConfig
+}
+
 func loadConfig() {
 	// 读取配置
 	if v1 := readConfig(); v1 != nil {
@@ -128,14 +132,38 @@ func loadConfig() {
 
 			os.Exit(3)
 		}
+
+		if _c := v1.Get("MySQLDataSource"); _c != nil {
+			var raw = make([]map[string]any, 0)
+
+			for _, c := range _c.([]interface{}) {
+
+				raw = append(raw, c.(map[string]any))
+			}
+
+			var _databases []gsql.MySQLConf
+
+			for _, m := range raw {
+				_databases = append(_databases, gsql.MySQLConf{
+					Name:     m["MYSQL_NAME"].(string),
+					Enable:   m["MYSQL_ENABLE"].(bool),
+					Server:   m["MYSQL_SERVER"].(string),
+					Database: m["MYSQL_DATABASE"].(string),
+					User:     m["MYSQL_USER_NAME"].(string),
+					Passwd:   m["MYSQL_PASSWD"].(string),
+					Location: m["MYSQL_MAPPER_LOCATION"].(string),
+				})
+			}
+
+			gsql.Databases = _databases
+		}
 	}
 }
 
 func GetConfig(key string) any {
-	var keyPath = strings.Split(key, ".")
+	var keyPath = strings.Split(strings.ToLower(key), ".")
 
 	for i, k := range keyPath {
-
 		if viperConfig.Get(k) != nil {
 			var val = viperConfig.Get(k)
 

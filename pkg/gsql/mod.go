@@ -15,10 +15,11 @@ import (
 )
 
 var Client MySQLClient
+var DataSouces map[string]*MySQLClient
 
 type MySQLConf struct {
 	Enable   bool   `mapstructure:"MYSQL_ENABLE"`
-	Opts     string `mapstructure:"MYSQL_CONN_OPTS" json:"opts"`
+	Name     string `mapstructure:"MYSQL_NAME"`
 	Server   string `mapstructure:"MYSQL_SERVER" json:"server"`
 	Database string `mapstructure:"MYSQL_DATABASE" json:"database"`
 	User     string `mapstructure:"MYSQL_USER_NAME" json:"user_name"`
@@ -27,21 +28,23 @@ type MySQLConf struct {
 }
 
 func (c *MySQLConf) connString(passwd string) string {
-	return fmt.Sprintf(`%s:%s@tcp(%s)/%s?%s`, c.User, passwd, c.Server, c.Database, c.Opts)
+	return fmt.Sprintf(`%s:%s@tcp(%s)/%s`, c.User, passwd, c.Server, c.Database)
 }
 
 var Settings = &MySQLConf{
 	Enable:   false,
-	Opts:     "timeout=90s&interpolateParams=true&multiStatements=true&charset=utf8&autocommit=true&parseTime=True&loc=Asia%2FShanghai",
+	Name:     "default",
 	Server:   "127.0.0.1:3306",
 	Database: "mydb",
 	User:     "keesh",
 	Passwd:   "Cc",
 }
 
+var Databases []MySQLConf
+
 func Init() {
 	if !Settings.Enable {
-		Log.Infof("MySQL-Initialized-Disabled: val=%t", Settings.Enable)
+		Log.Infof("MySQL-Disabled: val=%t", Settings.Enable)
 
 		return
 	}
@@ -49,7 +52,7 @@ func Init() {
 	db, err := sql.Open("mysql", Settings.connString(Settings.Passwd))
 
 	if err != nil {
-		Log.Errorf("MySQL-Initialized-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****"))
+		Log.Errorf("MySQL-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****"))
 
 		return
 	}
@@ -60,26 +63,72 @@ func Init() {
 	db.SetMaxIdleConns(10)
 
 	if err := db.Ping(); err != nil {
-		Log.Error(fmt.Sprintf("MySQL-Initialized-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****")))
-
-		return
-	}
-
-	var location = filepath.Join(utils.RootDir(), Settings.Location)
-
-	if tpl, err := template.New("").Funcs(funcMaps()).ParseGlob(location); err != nil {
-		panic(err)
+		Log.Error(fmt.Sprintf("MySQL-failed: Error=%s, ConnectionString=%s", err.Error(), Settings.connString("****")))
 	} else {
-		Client = MySQLClient{
-			DB:     db,
-			render: tpl,
+		var location = filepath.Join(utils.RootDir(), Settings.Location)
+
+		if tpl, err := template.New("").Funcs(funcMaps()).ParseGlob(location); err != nil {
+			panic(err)
+		} else {
+			Client = MySQLClient{
+				DB:     db,
+				render: tpl,
+				conf:   Settings,
+			}
+		}
+
+		if version, err := Client.Version(); err == nil {
+			Log.Info(fmt.Sprintf("MySQL-Succeed: ServerVersion=%s, ConnString=%s", version, Settings.connString("****")))
 		}
 	}
 
-	if version, err := Client.Version(); err == nil {
-		Log.Info(fmt.Sprintf("MySQL-Initialized-Connected-Successful: ServerVersion=%s, ConnString=%s", version, Settings.connString("****")))
-		// execute the Embedding scripts
-		//exceScripts()
-		return
+	if len(Databases) > 0 {
+		// 构建多数据源
+		SetupDataSource()
+	}
+}
+
+func SetupDataSource() {
+	DataSouces = make(map[string]*MySQLClient, len(Databases))
+
+	for _, m := range Databases {
+		db, err := sql.Open("mysql", m.connString(m.Passwd))
+
+		if err != nil {
+			Log.Errorf("MySQL-failed: Name=%s, Error=%s, ConnectionString=%s", m.Name, err.Error(), m.connString("****"))
+
+			continue
+		}
+
+		// See "Important settings" section.
+		db.SetConnMaxLifetime(time.Minute * 3)
+		db.SetMaxOpenConns(10)
+		db.SetMaxIdleConns(10)
+
+		if err := db.Ping(); err != nil {
+			Log.Error(fmt.Sprintf("MySQL-failed: Name=%s, Error=%s, ConnectionString=%s", m.Name, err.Error(), m.connString("****")))
+
+			continue
+		}
+
+		var location = filepath.Join(utils.RootDir(), m.Location)
+
+		if tpl, err := template.New("").Funcs(funcMaps()).ParseGlob(location); err != nil {
+			Log.Error(fmt.Sprintf("MySQL-failed: Name=%s, Error=%s, ConnectionString=%s", m.Name, err.Error(), m.connString("****")))
+
+			continue
+		} else {
+			client := MySQLClient{
+				DB:     db,
+				render: tpl,
+				conf:   &m,
+			}
+
+			if version, err := client.Version(); err == nil {
+				Log.Info(fmt.Sprintf("MySQL-Succeed: Name=%s, ServerVersion=%s, ConnString=%s", m.Name, version, m.connString("****")))
+			}
+
+			DataSouces[m.Name] = &client
+		}
 	}
 }

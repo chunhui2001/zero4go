@@ -84,3 +84,51 @@ https://templ.guide/
 | Java | Thymeleaf  | ⭐⭐⭐   |
 | Node | Astro      | ⭐⭐⭐⭐⭐ |
 | Node | React SSR  | ⭐⭐⭐⭐  |
+
+# rbac_model.conf
+-------------------------
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = sub, obj, act
+
+[role_definition]
+g = _, _
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
+
+解释：
+  r: 请求（subject, object, action）
+  p: 策略（谁可以做什么）
+  g: 角色关系
+  m: 匹配规则
+
+# policy.csv
+-------------------------
+p, admin, /admin, GET
+p, admin, /admin, POST
+p, user, /profile, GET
+
+g, alice, admin
+g, bob, user
+
+解释：
+  p 表示策略：角色可以访问某个 URL 做某种操作
+  g 表示用户属于哪个角色
+
+# 验证权限
+$ curl -H "X-User: alice" http://localhost:8080/admin
+> 返回: {"message":"welcome admin"}
+
+$ curl -H "X-User: bob" http://localhost:8080/admin
+> 返回: {"error":"forbidden"}
+
+$ curl -H "X-User: bob" http://localhost:8080/profile
+> 返回: {"message":"profile page"}
+
+
