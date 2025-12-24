@@ -104,13 +104,6 @@ func Setup(f func(*Application)) *Application {
 			},
 		})
 
-	// Casbin 初始化
-	//adapter := fileadapter.NewAdapter(filepath.Join(utils.RootDir(), "realm", "policy.csv"))
-	//e, _ := casbin.NewEnforcer(filepath.Join(utils.RootDir(), "realm", "rbac_model.conf"), adapter)
-	//e.LoadPolicy() // 加载策略
-
-	//r.Use(middlewares.CasbinMiddleware(e)) // 全局使用中间件
-
 	r.Use(gin.Recovery())
 	r.Use(rateLimitMiddleWare)
 

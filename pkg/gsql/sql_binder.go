@@ -1,15 +1,12 @@
 package gsql
 
 import (
-	"bytes"
 	"fmt"
 	"regexp"
 	"strings"
 	"sync"
 	"text/template"
-
-	. "github.com/chunhui2001/zero4go/pkg/logs" //nolint:staticcheck
-	"github.com/chunhui2001/zero4go/pkg/utils"
+	//nolint:staticcheck
 )
 
 var ReGTrim = regexp.MustCompile(`,\s*__TRIM__\(,\)`)
@@ -62,33 +59,6 @@ func SqlBind(val any, ctx *SqlBindContext) string {
 	ctx.AddBind(val)
 
 	return "?"
-}
-
-// RenderSQL 1️⃣ 渲染 SQL + 获取绑定值
-func RenderSQL(tmpl *template.Template, tplName string, params map[string]interface{}) (string, []any, error) {
-	bindCtx := NewSqlBindContext()
-
-	params["CTX"] = bindCtx
-
-	var buf bytes.Buffer
-	err := tmpl.ExecuteTemplate(&buf, tplName, params)
-
-	if err != nil {
-		Log.Errorf("RenderSQL: Error=%s", err.Error())
-
-		return "", nil, err
-	}
-
-	// 取出绑定值
-	binds := bindCtx.TakeBinds()
-
-	var out = buf.String()
-
-	var sqlStatement = trimEndSymbol(utils.NormalizeSpace(DebugSQLWithBinds(out, binds)))
-
-	Log.Debugf("sqlStatement: sql=%s", sqlStatement)
-
-	return trimEndSymbol(out), binds, nil
 }
 
 // DebugSQLWithBinds 将 SQL 中的 '?' 占位符替换成绑定值的可读形式
