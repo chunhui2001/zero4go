@@ -82,15 +82,13 @@ func Init() {
 		}
 	}
 
-	// 构建多数据源
-	SetupDataSource()
+	if len(Databases) > 0 {
+		// 构建多数据源
+		SetupDataSource()
+	}
 }
 
 func SetupDataSource() {
-	if len(Databases) == 0 {
-		return
-	}
-
 	DataSouces = make(map[string]*MySQLClient, len(Databases))
 
 	for _, m := range Databases {
